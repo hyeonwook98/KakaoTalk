@@ -28,7 +28,7 @@ public class login {
 	
 	PosImageIcon loginBackground;
 	
-	JButton loginButton; JButton friendButton1; JButton friendButton2; JButton ChatButton1; JButton ChatButton2; JButton PlusButton1; JButton PlusButton2; 
+	JButton loginButton; JButton createButton; JButton pwModifyButton; JButton friendButton1; JButton friendButton2; JButton ChatButton1; JButton ChatButton2; JButton PlusButton1; JButton PlusButton2; 
 	JButton emoticonButton1; JButton emoticonButton2; JButton noticeButton1; JButton noticeButton2; JButton settingButton1; JButton settingButton2; JButton searchButton; JButton addButton;
 	
 	//배경
@@ -56,7 +56,11 @@ public class login {
         password.setBounds(58, 258,240, 39);
        
         loginButton = new JButton(new ImageIcon("src/image/로그인 버튼.png"));
+        createButton = new JButton(new ImageIcon("src/image/계정생성 버튼.png"));
+        pwModifyButton = new JButton(new ImageIcon("src/image/비밀번호 재설정 버튼.png"));
         loginButton.setBounds(58, 300, 240, 40);
+        createButton.setBounds(60,500,110,30);
+        pwModifyButton.setBounds(185,500,110,30);
         ButtonListener bl = new ButtonListener();
         loginButton.addActionListener(bl);
         
@@ -65,7 +69,7 @@ public class login {
         lp=new LoginPanel();
         lp.setBounds(0,0, 370, 580);
         lp.add(id); lp.add(password);
-        lp.add(loginButton);
+        lp.add(loginButton); lp.add(createButton);lp.add(pwModifyButton);
         frame.getContentPane().add(lp);
         
         mainFrame=new JFrame("카카오톡");
