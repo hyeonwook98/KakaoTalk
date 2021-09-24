@@ -7,11 +7,13 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.Socket;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -19,18 +21,13 @@ import javax.swing.JTextField;
 public class login {
 
 	JFrame frame,mainFrame;
-	
 	LoginPanel lp;FriendPanel fp;MainPanel mp;
-	
 	JTextField id,password;
-	
 	JLabel friend;
-	
-	PosImageIcon loginBackground;
-	
+	ImageIcon loginBackground;
 	JButton loginButton; JButton createButton; JButton pwModifyButton; JButton friendButton1; JButton friendButton2; JButton ChatButton1; JButton ChatButton2; JButton PlusButton1; JButton PlusButton2; 
 	JButton emoticonButton1; JButton emoticonButton2; JButton noticeButton1; JButton noticeButton2; JButton settingButton1; JButton settingButton2; JButton searchButton; JButton addButton;
-	
+	Socket sock;
 	//배경
 	String L_BACK="src/image/카카오톡 로그인 화면.png";
 	
@@ -41,7 +38,7 @@ public class login {
 		login.go();
 	}
 
-	private void go() {
+	public void go() {
 		frame=new JFrame("카카오톡");
 		// 클라이언드 프레임 창 조정
 		frame.setBounds(100, 100, 370, 600);
@@ -64,15 +61,21 @@ public class login {
         ButtonListener bl = new ButtonListener();
         loginButton.addActionListener(bl);
         
-        
-        
         lp=new LoginPanel();
         lp.setBounds(0,0, 370, 580);
         lp.add(id); lp.add(password);
         lp.add(loginButton); lp.add(createButton);lp.add(pwModifyButton);
         frame.getContentPane().add(lp);
         
-        mainFrame=new JFrame("카카오톡");
+        setUpNetworking();
+        
+        
+        
+        frame.setVisible(true);
+	}
+	
+	public void mainFrame() {
+		mainFrame=new JFrame("카카오톡");
         // 클라이언트 프레임 창 조정
         mainFrame.setBounds(100, 100, 410, 670);
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -141,17 +144,21 @@ public class login {
         fp.add(friend); fp.add(searchButton); fp.add(addButton);
         mainFrame.getContentPane().add(mp);
         mainFrame.getContentPane().add(fp);
-        
-        frame.setVisible(true);
+        mainFrame.setVisible(true);
 	}
+	
+	
+	/////////////////////////////////////////패널////////////////////////////////////////////////
+	
 	//로그인 패널
 	class LoginPanel extends JPanel{
 		public LoginPanel() {
 			setLayout(null);
-			loginBackground = new PosImageIcon(L_BACK,0,0,355,563);
+			loginBackground = new ImageIcon(L_BACK);
 		}
 		public void paintComponent(Graphics g) {
-			loginBackground.draw(g);
+			//loginBackground.draw(g);
+			g.drawImage(loginBackground.getImage(), 0, 0, 355, 563, null);
 		}
 	}
 	//메인 패널
@@ -175,13 +182,21 @@ public class login {
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
 			if(e.getSource()==loginButton) {
+				mainFrame();
 				frame.setVisible(false); 
-				mainFrame.setVisible(true);
-				frame.repaint();
-				mainFrame.repaint();
 			}
 		}
 		
 	}
+	private void setUpNetworking() {  
+		   try {
+			   // sock = new Socket("220.69.203.11", 5000);		// 오동익의 컴퓨터
+			   sock = new Socket("127.0.0.1", 7000);			// 소켓 통신을 위한 포트는 5000번 사용키로 함
+		   } catch(Exception ex) {
+			   JOptionPane.showMessageDialog(null, "서버접속에 실패하였습니다. 접속을 종료합니다.");
+	           ex.printStackTrace();
+	           frame.dispose();		// 네트워크가 초기 연결 안되면 클라이언트 강제 종료
+		   }
+	   } // close setUpNetworking
 }
 
