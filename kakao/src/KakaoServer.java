@@ -62,7 +62,16 @@ public class KakaoServer {
 					// 읽은 메시지의 종류에 따라 각각 할일이 정해져 있음
 					message = (ChatMessage) reader.readObject();	  // 클라이언트의 전송 메시지 받음
 					type = message.getType();
-					if(type == ChatMessage.MsgType.USER_MSG) {
+					if (type == ChatMessage.MsgType.CREATION) {
+						
+					}
+					else if(type == ChatMessage.MsgType.LOGIN) {
+						
+					}
+					else if (type == ChatMessage.MsgType.LOGOUT) {
+						
+					}
+					else if(type == ChatMessage.MsgType.USER_MSG) {
 						handleMessage(message.getSender(), message.getReceiver(), message.getContents());
 					}
 					else if (type == ChatMessage.MsgType.NO_ACT) {

@@ -20,16 +20,17 @@ import javax.swing.JTextField;
 
 public class login {
 
-	JFrame frame,mainFrame;
-	LoginPanel lp;FriendPanel fp;MainPanel mp;
-	JTextField id,password;
+	JFrame frame,mainFrame,creationFrame;
+	LoginPanel lp;FriendPanel fp;MainPanel mp; CreationPanel cp;
+	JTextField id,password,cName,cEmail,cPw,cPhone;
 	JLabel friend;
-	ImageIcon loginBackground;
+	ImageIcon loginBackground; ImageIcon createBackground;
 	JButton loginButton; JButton createButton; JButton pwModifyButton; JButton friendButton1; JButton friendButton2; JButton ChatButton1; JButton ChatButton2; JButton PlusButton1; JButton PlusButton2; 
 	JButton emoticonButton1; JButton emoticonButton2; JButton noticeButton1; JButton noticeButton2; JButton settingButton1; JButton settingButton2; JButton searchButton; JButton addButton;
+	JButton confirmButton;
 	Socket sock;
 	//배경
-	String L_BACK="src/image/카카오톡 로그인 화면.png";
+	String L_BACK="src/image/카카오톡 로그인 화면.png"; String C_BACK="src/image/카카오계정 생성 화면.png";
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -60,6 +61,7 @@ public class login {
         pwModifyButton.setBounds(185,500,110,30);
         ButtonListener bl = new ButtonListener();
         loginButton.addActionListener(bl);
+        createButton.addActionListener(bl);
         
         lp=new LoginPanel();
         lp.setBounds(0,0, 370, 580);
@@ -146,7 +148,38 @@ public class login {
         mainFrame.getContentPane().add(fp);
         mainFrame.setVisible(true);
 	}
-	
+	public void creationFrame() {
+		creationFrame=new JFrame("카카오계정 생성");
+		// 클라이언드 프레임 창 조정
+		creationFrame.setBounds(94, 100, 386, 540);
+		//creationFrame.setDefaultCloseOperation(creationFrame.EXIT_ON_CLOSE);
+		creationFrame.getContentPane().setLayout(null);
+		creationFrame.setLocationRelativeTo(null);
+       // frame.setResizable(false);      
+       
+		cName = new JTextField();
+		cEmail = new JTextField();
+		cPw = new JTextField();
+		cPhone = new JTextField();
+		
+		cName.setBounds(110, 220, 200, 32);
+		cEmail.setBounds(110, 260, 200, 32);
+		cPw.setBounds(110, 300, 200, 32);
+		cPhone.setBounds(110, 362, 200, 32);
+		
+		confirmButton = new JButton();
+		confirmButton.setBounds(38, 430, 300, 38);
+		confirmButton.setBorderPainted(false);
+		confirmButton.setContentAreaFilled(false);
+		confirmButton.setFocusPainted(false);
+        cp=new CreationPanel();
+        cp.setBounds(0,0, 370, 580);
+        cp.add(confirmButton);
+        cp.add(cName);cp.add(cEmail);cp.add(cPw);cp.add(cPhone);
+        creationFrame.getContentPane().add(cp);
+        
+        creationFrame.setVisible(true);
+	}
 	
 	/////////////////////////////////////////패널////////////////////////////////////////////////
 	
@@ -175,6 +208,17 @@ public class login {
 			
 		}
 	}
+	//카카오계정 생성 패널
+	class CreationPanel extends JPanel{
+		public CreationPanel() {
+			setLayout(null);
+			createBackground = new ImageIcon(C_BACK);
+		}
+		public void paintComponent(Graphics g) {
+			//loginBackground.draw(g);
+			g.drawImage(createBackground.getImage(), 0, 0, 370, 503, null);
+		}
+	}
 	//로그인화면 버튼 리스너
 	class ButtonListener implements ActionListener{
 
@@ -184,6 +228,9 @@ public class login {
 			if(e.getSource()==loginButton) {
 				mainFrame();
 				frame.setVisible(false); 
+			}
+			if(e.getSource()==createButton) {
+				creationFrame();
 			}
 		}
 		
