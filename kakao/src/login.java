@@ -7,8 +7,6 @@ import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import javax.swing.ImageIcon;
@@ -23,26 +21,21 @@ import javax.swing.JTextField;
 public class login {
 
 	JFrame frame,mainFrame,creationFrame;
-	LoginPanel lp;FriendPanel fp;MainPanel mp; CreationPanel cp;
-	JTextField id,password,cName,cEmail,cPw,cPhone;
+	LoginPanel lp;FriendPanel fp;MainPanel mp;
+	JTextField id,password;
 	JLabel friend;
-	ImageIcon loginBackground; ImageIcon createBackground;
+	ImageIcon loginBackground;
 	JButton loginButton; JButton createButton; JButton pwModifyButton; JButton friendButton1; JButton friendButton2; JButton ChatButton1; JButton ChatButton2; JButton PlusButton1; JButton PlusButton2; 
 	JButton emoticonButton1; JButton emoticonButton2; JButton noticeButton1; JButton noticeButton2; JButton settingButton1; JButton settingButton2; JButton searchButton; JButton addButton;
-	JButton confirmButton;
-	ObjectInputStream reader;	// 수신용 스트림
-    ObjectOutputStream writer;	// 송신용 스트림
-    String user,email,pw,phone;
 	Socket sock;
 	//배경
-	String L_BACK="src/image/카카오톡 로그인 화면.png"; String C_BACK="src/image/카카오계정 생성 화면.png";
+	String L_BACK="src/image/카카오톡 로그인 화면.png";
 	
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
 
 		login login = new login();
 		login.go();
-		
 	}
 
 	public void go() {
@@ -66,9 +59,7 @@ public class login {
         createButton.setBounds(60,500,110,30);
         pwModifyButton.setBounds(185,500,110,30);
         ButtonListener bl = new ButtonListener();
-        dbButtonListener b2 = new dbButtonListener();
-        loginButton.addActionListener(b2);
-        createButton.addActionListener(bl);
+        loginButton.addActionListener(bl);
         
         lp=new LoginPanel();
         lp.setBounds(0,0, 370, 580);
@@ -158,35 +149,31 @@ public class login {
 	public void creationFrame() {
 		creationFrame=new JFrame("카카오계정 생성");
 		// 클라이언드 프레임 창 조정
-		creationFrame.setBounds(94, 100, 386, 540);
-		//creationFrame.setDefaultCloseOperation(creationFrame.EXIT_ON_CLOSE);
+		creationFrame.setBounds(100, 100, 370, 600);
+		creationFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		creationFrame.getContentPane().setLayout(null);
 		creationFrame.setLocationRelativeTo(null);
        // frame.setResizable(false);      
+        
+        id=new JTextField();
+        password=new JTextField();
+        id.setBounds(58, 220, 240, 39);
+        password.setBounds(58, 258,240, 39);
        
-		cName = new JTextField();
-		cEmail = new JTextField();
-		cPw = new JTextField();
-		cPhone = new JTextField();
-		
-		cName.setBounds(110, 220, 200, 32);
-		cEmail.setBounds(110, 260, 200, 32);
-		cPw.setBounds(110, 300, 200, 32);
-		cPhone.setBounds(110, 362, 200, 32);
-		
-		confirmButton = new JButton();
-		confirmButton.setBounds(38, 430, 300, 38);
-		confirmButton.setBorderPainted(false);
-		confirmButton.setContentAreaFilled(false);
-		confirmButton.setFocusPainted(false);
-		
-		dbButtonListener b2 = new dbButtonListener();
-		confirmButton.addActionListener(b2);
-        cp=new CreationPanel();
-        cp.setBounds(0,0, 370, 580);
-        cp.add(confirmButton);
-        cp.add(cName);cp.add(cEmail);cp.add(cPw);cp.add(cPhone);
-        creationFrame.getContentPane().add(cp);
+        loginButton = new JButton(new ImageIcon("src/image/로그인 버튼.png"));
+        createButton = new JButton(new ImageIcon("src/image/계정생성 버튼.png"));
+        pwModifyButton = new JButton(new ImageIcon("src/image/비밀번호 재설정 버튼.png"));
+        loginButton.setBounds(58, 300, 240, 40);
+        createButton.setBounds(60,500,110,30);
+        pwModifyButton.setBounds(185,500,110,30);
+        ButtonListener bl = new ButtonListener();
+        loginButton.addActionListener(bl);
+        
+        lp=new LoginPanel();
+        lp.setBounds(0,0, 370, 580);
+        lp.add(id); lp.add(password);
+        lp.add(loginButton); lp.add(createButton);lp.add(pwModifyButton);
+        creationFrame.getContentPane().add(lp);
         
         creationFrame.setVisible(true);
 	}
@@ -218,86 +205,28 @@ public class login {
 			
 		}
 	}
-	//카카오계정 생성 패널
-	class CreationPanel extends JPanel{
-		public CreationPanel() {
-			setLayout(null);
-			createBackground = new ImageIcon(C_BACK);
-		}
-		public void paintComponent(Graphics g) {
-			//loginBackground.draw(g);
-			g.drawImage(createBackground.getImage(), 0, 0, 370, 503, null);
-		}
-	}
-	private void setUpNetworking() {  
-		   try {
-			   // sock = new Socket("220.69.203.11", 5000);		// 오동익의 컴퓨터
-			   sock = new Socket("127.0.0.1", 6000);			// 소켓 통신을 위한 포트는 5000번 사용키로 함
-			   reader = new ObjectInputStream(sock.getInputStream());
-			   writer = new ObjectOutputStream(sock.getOutputStream());
-		   } catch(Exception ex) {
-			   JOptionPane.showMessageDialog(null, "서버접속에 실패하였습니다. 접속을 종료합니다.");
-	           ex.printStackTrace();
-	           frame.dispose();		// 네트워크가 초기 연결 안되면 클라이언트 강제 종료
-		   }
-	   } // close setUpNetworking
-	
 	//로그인화면 버튼 리스너
 	class ButtonListener implements ActionListener{
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
-			
-			if(e.getSource()==createButton) {
-				creationFrame();
-			}
-		}
-	}
-	//DB와 연동해야하는 버튼 리스너
-	class dbButtonListener implements ActionListener{
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-			if(e.getSource()==confirmButton) {
-				user = cName.getText();
-				email = cEmail.getText();
-				pw = cPw.getText();
-				phone = cPhone.getText();
-				processCreation();
-			}
 			if(e.getSource()==loginButton) {
-				email = id.getText();
-				pw=password.getText();
-				processLogin();
 				mainFrame();
-				frame.setVisible(false);
+				frame.setVisible(false); 
 			}
 		}
 		
 	}
-	//카카오 계정 생성 처리
-	public void processCreation() {
-		// TODO Auto-generated method stub
-		 try {
-      		  writer.writeObject(new ChatMessage(ChatMessage.MsgType.CREATION, user, email, pw, phone, "", "", ""));
-             writer.flush();
-      	  } catch(Exception ex) {
-      		  JOptionPane.showMessageDialog(null, "카카오 계정 생성 중 서버접속에 문제가 발생하였습니다.");
-      		  ex.printStackTrace();
-      	  }
-	}
-
-	public void processLogin() {
-		// TODO Auto-generated method stub
-		try {
-    		  writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN, "", email, pw, "", "", "", ""));
-           writer.flush();
-    	  } catch(Exception ex) {
-    		  JOptionPane.showMessageDialog(null, "카카오톡 로그인 중 서버접속에 문제가 발생하였습니다.");
-    		  ex.printStackTrace();
-    	  }
-	}
+	private void setUpNetworking() {  
+		   try {
+			   // sock = new Socket("220.69.203.11", 5000);		// 오동익의 컴퓨터
+			   sock = new Socket("127.0.0.1", 7000);			// 소켓 통신을 위한 포트는 5000번 사용키로 함
+		   } catch(Exception ex) {
+			   JOptionPane.showMessageDialog(null, "서버접속에 실패하였습니다. 접속을 종료합니다.");
+	           ex.printStackTrace();
+	           frame.dispose();		// 네트워크가 초기 연결 안되면 클라이언트 강제 종료
+		   }
+	   } // close setUpNetworking
 }
 

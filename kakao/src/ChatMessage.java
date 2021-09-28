@@ -7,23 +7,15 @@ public class ChatMessage implements Serializable {
 	public enum MsgType{NO_ACT,CREATION,LOGIN,LOGOUT,USER_MSG,SERVER_MSG};
 	
 	private MsgType type;
-	private String name;
-	private String email;
-	private String password;
-	private String phone;
 	private String sender;
 	private String receiver;
 	private String contents;
 	
 	public ChatMessage() {
-		this(MsgType.NO_ACT,"","","","","","","");
+		this(MsgType.NO_ACT,"","","");
 	}
-	public ChatMessage(MsgType t, String n, String e, String pw ,String p, String sID, String rID, String mesg) {
+	public ChatMessage(MsgType t, String sID, String rID, String mesg) {
 		type = t;
-		name = n;
-		email = e;
-		password = pw;
-		phone = p;
 		sender = sID;
 		receiver = rID;
 		contents = mesg;
@@ -54,30 +46,6 @@ public class ChatMessage implements Serializable {
 	}
 	public String getContents() {
 		return contents;
-	}
-	public void setName (String n) {
-		name = n;
-	}
-	public String getName() {
-		return name;
-	}
-	public void setEmail (String e) {
-	    email = e;
-	}
-	public String getEmail() {
-		return email;
-	}
-	public void setPw (String pw) {
-		password = pw;
-	}
-	public String getPw() {
-		return password;
-	}
-	public void setPhone (String p) {
-	    phone = p;
-	}
-	public String getPhone() {
-		return phone;
 	}
 
 }

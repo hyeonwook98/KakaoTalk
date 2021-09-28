@@ -16,12 +16,11 @@ public class KakaoServer {
 
 	private void go () {
 		try {
-			ServerSocket serverSock = new ServerSocket(6000);	// 채팅을 위한 소켓 포트 5000 사용
+			ServerSocket serverSock = new ServerSocket(7000);	// 채팅을 위한 소켓 포트 5000 사용
 
 			while(true) {
 				Socket userSocket = serverSock.accept();		// 새로운 클라이언트 접속 대기
 
-				
 				// 클라이언트를 위한 입출력 스트림 및 스레드 생성
 				Thread t1 = new Thread(new UserHandler(userSocket));
 				t1.start();
@@ -36,8 +35,8 @@ public class KakaoServer {
 	//유저와 1:1 대응하는 메시지 수신 스레드
 	private class UserHandler implements Runnable{
 		Socket sock;					// 클라이언트 연결용 소켓
-		ObjectOutputStream writer;		// 클라이언트로 송신하기 위한 스트림
 		ObjectInputStream reader;		// 클라이언트로 부터 수신하기 위한 스트림
+		ObjectOutputStream writer;		// 클라이언트로 송신하기 위한 스트림
 
 		// 구성자. 클라이언트와의 소켓에서 읽기와 쓰기 스트림 만들어 냄
 		// 스트림을 만들때 InputStream을 먼저 만들면 Hang함. 그래서 OutputStream먼저 만들었음.
@@ -64,16 +63,16 @@ public class KakaoServer {
 					message = (ChatMessage) reader.readObject();	  // 클라이언트의 전송 메시지 받음
 					type = message.getType();
 					if (type == ChatMessage.MsgType.CREATION) {
-						handleCreation(message.getName(),message.getEmail(),message.getPw(),message.getPhone(),writer);
+						
 					}
 					else if(type == ChatMessage.MsgType.LOGIN) {
-						handleLogin(message.getEmail(),message.getPw(),writer);
+						
 					}
 					else if (type == ChatMessage.MsgType.LOGOUT) {
 						
 					}
 					else if(type == ChatMessage.MsgType.USER_MSG) {
-						//handleMessage(message.getSender(), message.getReceiver(), message.getContents());
+						handleMessage(message.getSender(), message.getReceiver(), message.getContents());
 					}
 					else if (type == ChatMessage.MsgType.NO_ACT) {
 						//  무시해도 되는 메시지
@@ -90,30 +89,9 @@ public class KakaoServer {
 			}
 		}// close run
 	}// close inner class
-	//유저 카카오계정 생성 정보받기
-	private synchronized void handleCreation(String name, String email, String pw, String phone, ObjectOutputStream writer) {
-		try {
-			   System.out.println(name+"1234");
-		   } catch (Exception ex) {
-			   System.out.println("S : 서버에서 송신 중 이상 발생");
-			   ex.printStackTrace();
-		   }
-		
-	}
-
-	//로그인 정보 받기
-	public void handleLogin(String email, String pw, ObjectOutputStream writer) {
-		// TODO Auto-generated method stub
-		try {
-			   System.out.println(email+"1234");
-		   } catch (Exception ex) {
-			   System.out.println("S : 서버에서 송신 중 이상 발생");
-			   ex.printStackTrace();
-		   }
-	}
 
 	//유저가 대화 상대방에게 보내는 메시지. 그 상대 혹은 "원하는 친구전체"에게 보내주어야 함
-	/*private synchronized void handleMessage(String sender, String receiver, String contents) {
+	private synchronized void handleMessage(String sender, String receiver, String contents) {
 		//같은 단톡방에 있는 친구전체에게 보내는 경우를 처리해야 함, 이경우 리시버가 다수임
 		if(receiver.length()>4) {
 			array=receiver.split(",");
@@ -126,13 +104,7 @@ public class KakaoServer {
 			array=receiver.split(",");
 			who.add(array[0]);   //who[0]에는 메시지를 보내려는 상대방 이름
 		}
-		try {
-			   
-		   } catch (Exception ex) {
-			   System.out.println("S : 서버에서 송신 중 이상 발생");
-			   ex.printStackTrace();
-		   }
-	}*/
+	}
 
-	
+	//유저와 1:1 대응하는 유저정보 수신 스레드
 }
