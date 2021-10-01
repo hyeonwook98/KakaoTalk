@@ -11,12 +11,14 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 
@@ -30,9 +32,10 @@ public class login {
 	JButton loginButton; JButton createButton; JButton pwModifyButton; JButton friendButton1; JButton friendButton2; JButton ChatButton1; JButton ChatButton2; JButton PlusButton1; JButton PlusButton2; 
 	JButton emoticonButton1; JButton emoticonButton2; JButton noticeButton1; JButton noticeButton2; JButton settingButton1; JButton settingButton2; JButton searchButton; JButton addButton;
 	JButton confirmButton;
+	JRadioButton men,women;
 	ObjectInputStream reader;	// 수신용 스트림
     ObjectOutputStream writer;	// 송신용 스트림
-    String user,email,pw,phone;
+    String user,email,pw,phone,gender;
 	Socket sock;
 	//배경
 	String L_BACK="src/image/카카오톡 로그인 화면.png"; String C_BACK="src/image/카카오계정 생성 화면.png";
@@ -158,7 +161,7 @@ public class login {
 	public void creationFrame() {
 		creationFrame=new JFrame("카카오계정 생성");
 		// 클라이언드 프레임 창 조정
-		creationFrame.setBounds(94, 100, 386, 540);
+		creationFrame.setBounds(94, 100, 386, 536);
 		//creationFrame.setDefaultCloseOperation(creationFrame.EXIT_ON_CLOSE);
 		creationFrame.getContentPane().setLayout(null);
 		creationFrame.setLocationRelativeTo(null);
@@ -169,24 +172,40 @@ public class login {
 		cPw = new JTextField();
 		cPhone = new JTextField();
 		
-		cName.setBounds(110, 220, 200, 32);
-		cEmail.setBounds(110, 260, 200, 32);
-		cPw.setBounds(110, 300, 200, 32);
-		cPhone.setBounds(110, 362, 200, 32);
+		cName.setBounds(110, 194, 200, 32);
+		cEmail.setBounds(110, 234, 200, 32);
+		cPw.setBounds(110, 274, 200, 32);
+		cPhone.setBounds(110, 333, 200, 32);
 		
 		confirmButton = new JButton();
-		confirmButton.setBounds(38, 430, 300, 38);
-		confirmButton.setBorderPainted(false);
+		confirmButton.setBounds(38, 427, 300, 38);
+		//confirmButton.setBorderPainted(false);
 		confirmButton.setContentAreaFilled(false);
 		confirmButton.setFocusPainted(false);
 		
 		dbButtonListener b2 = new dbButtonListener();
 		confirmButton.addActionListener(b2);
+		
+		ButtonGroup gChoice = new ButtonGroup();   //라디어 버튼을 그룹화 하기위한 객체 생성
+		men=new JRadioButton("남성");               //라디오 버튼 생성
+		women=new JRadioButton("여성");             //라디오 버튼 생성
+		
+		gChoice.add(men);
+		gChoice.add(women);
+		
+		men.setBackground(Color.white);
+		women.setBackground(Color.white);
+		men.setBounds(110, 366, 50, 40);
+		women.setBounds(160, 366, 50, 40);
+		
+		
         cp=new CreationPanel();
         cp.setBounds(0,0, 370, 580);
         cp.add(confirmButton);
         cp.add(cName);cp.add(cEmail);cp.add(cPw);cp.add(cPhone);
+        cp.add(men); cp.add(women);
         creationFrame.getContentPane().add(cp);
+        
         
         creationFrame.setVisible(true);
 	}
@@ -226,7 +245,7 @@ public class login {
 		}
 		public void paintComponent(Graphics g) {
 			//loginBackground.draw(g);
-			g.drawImage(createBackground.getImage(), 0, 0, 370, 503, null);
+			g.drawImage(createBackground.getImage(), 0, 0, 370, 496, null);
 		}
 	}
 	private void setUpNetworking() {  
@@ -265,6 +284,7 @@ public class login {
 				email = cEmail.getText();
 				pw = cPw.getText();
 				phone = cPhone.getText();
+				gender=men.getText();
 				processCreation();
 			}
 			if(e.getSource()==loginButton) {
@@ -281,7 +301,7 @@ public class login {
 	public void processCreation() {
 		// TODO Auto-generated method stub
 		 try {
-      		  writer.writeObject(new ChatMessage(ChatMessage.MsgType.CREATION, user, email, pw, phone, "", "", ""));
+      		  writer.writeObject(new ChatMessage(ChatMessage.MsgType.CREATION, user, email, pw, phone,gender, "", "", ""));
              writer.flush();
       	  } catch(Exception ex) {
       		  JOptionPane.showMessageDialog(null, "카카오 계정 생성 중 서버접속에 문제가 발생하였습니다.");
@@ -292,7 +312,7 @@ public class login {
 	public void processLogin() {
 		// TODO Auto-generated method stub
 		try {
-    		  writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN, "", email, pw, "", "", "", ""));
+    		  writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN, "", email, pw,"", "", "", "", ""));
            writer.flush();
     	  } catch(Exception ex) {
     		  JOptionPane.showMessageDialog(null, "카카오톡 로그인 중 서버접속에 문제가 발생하였습니다.");

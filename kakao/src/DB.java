@@ -10,7 +10,7 @@ public class DB{
 	String Driver = "com.mysql.cj.jdbc.Driver";
 	
 	public DB() {
-		this.url = "jdbc:mysql://localhost:3306/madang?&serverTimezone=Asia/Seoul";
+		this.url = "jdbc:mysql://localhost:3306/kakao?&serverTimezone=Asia/Seoul";
 		this.id = "root";
 		this.pwd = "root";		
 	}
@@ -27,7 +27,7 @@ public class DB{
 			conn = DriverManager.getConnection(url, id, pwd); // JDBC 연결
 			System.out.println("DB 연결 완료");
 		} catch (ClassNotFoundException e) {
-			System.out.println("JDBC 드라이버 로드 오류");
+			System.out.println("JDBC 드라이버 로드 오류1");
 		} catch (SQLException e) {
 			System.out.println("DB 연결 오류");
 		}

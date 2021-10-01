@@ -10,7 +10,7 @@ public class DB_Connect {
 		PreparedStatement pstmt = null;
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/madang?&serverTimezone=Asia/Seoul", "madang", "madang");
+			conn = DriverManager.getConnection("jdbc:mysql://localhost:3306/kakao?&serverTimezone=Asia/Seoul", "kakao", "root");
 			System.out.println("DB 연결완료");
 			
 		}catch(ClassNotFoundException e) {

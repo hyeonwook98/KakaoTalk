@@ -1,5 +1,8 @@
 import java.io.*;
 import java.net.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.*;
 
 public class KakaoServer {
@@ -8,7 +11,10 @@ public class KakaoServer {
 
 	ArrayList<String> who = new ArrayList(); //string 타입만 사용가능
 	String[] array = null;
-	
+	DB db = new DB();// DB 연결을 위해 객체 생성
+	Connection conn = db.conn(); // 자바와 DB 연결통로 객체인 Connection 객체 생성
+	PreparedStatement pstmt;//파라미터를 물음표로 받을 수 있음. 어떤 정보를 조건(물음표)에 대해 가져오려할 때 유용하게 사용 가능. 쿼리문을 좀더 편하게 사용하기위해 사용. 
+	ResultSet rs; //쿼리 전송의 결과 객체를 반환하기위함
 
 	public static void main (String[] args) {
 		new KakaoServer().go();
@@ -25,6 +31,7 @@ public class KakaoServer {
 				// 클라이언트를 위한 입출력 스트림 및 스레드 생성
 				Thread t1 = new Thread(new UserHandler(userSocket));
 				t1.start();
+				
 				System.out.println("S : 클라이언트 연결 됨");		// 상태를 보기위한 출력 메시지
 			}
 		} catch(Exception ex) {
@@ -64,7 +71,7 @@ public class KakaoServer {
 					message = (ChatMessage) reader.readObject();	  // 클라이언트의 전송 메시지 받음
 					type = message.getType();
 					if (type == ChatMessage.MsgType.CREATION) {
-						handleCreation(message.getName(),message.getEmail(),message.getPw(),message.getPhone(),writer);
+						handleCreation(message.getName(),message.getEmail(),message.getPw(),message.getPhone(),message.getGender(),writer);
 					}
 					else if(type == ChatMessage.MsgType.LOGIN) {
 						handleLogin(message.getEmail(),message.getPw(),writer);
@@ -91,9 +98,26 @@ public class KakaoServer {
 		}// close run
 	}// close inner class
 	//유저 카카오계정 생성 정보받기
-	private synchronized void handleCreation(String name, String email, String pw, String phone, ObjectOutputStream writer) {
+	private synchronized void handleCreation(String name, String email, String pw, String phone,String gender, ObjectOutputStream writer) {
+		String sql="insert into user(이름,이메일,비밀번호,전화번호,성별)values(?,?,?,?,?);";
 		try {
-			   System.out.println(name+"1234");
+			pstmt = conn.prepareStatement(sql); //sql문을 conn을 이용해 전달, sql문을 DB에 전달한다고 생각하면 될듯! try catch문이 필요한 문장
+			pstmt.setString(1, name); // 물음표가 있는 위치 순서로 번호가 지정됨. 물음표의 개수만큼 만들어줘야함.(개수 안맞추면 오류가 난다!)
+			pstmt.setString(2, email);
+			pstmt.setString(3, pw);
+			pstmt.setString(4, phone);
+			pstmt.setString(5, gender);
+			
+			//WORD는 String으로 받은 String의 cname, cphone, ctype, cnumber를 전달해서 세팅해서 실행하도록 해줌.
+			//cname, cphone, ctype, cnumber은 해당되는 부분의 JTextField에서 적힌 정보를 받아와야함!(텍스트필드 변수.getText(););
+			
+			int result = pstmt.executeUpdate(); //쿼리 전송의 결과 객체를 반환하기위함. 0이면 오류, 1이면 제대로 실행된 것.
+			// executeUpdate는 insert, update, delete 문에서 사용
+			// executeQuery는 select문에서 사용.
+			System.out.println("result = "+result);
+			
+			pstmt.close(); // 종료
+			conn.close(); // 종료
 		   } catch (Exception ex) {
 			   System.out.println("S : 서버에서 송신 중 이상 발생");
 			   ex.printStackTrace();

@@ -11,19 +11,21 @@ public class ChatMessage implements Serializable {
 	private String email;
 	private String password;
 	private String phone;
+	private String gender;
 	private String sender;
 	private String receiver;
 	private String contents;
 	
 	public ChatMessage() {
-		this(MsgType.NO_ACT,"","","","","","","");
+		this(MsgType.NO_ACT,"","","","","","","","");
 	}
-	public ChatMessage(MsgType t, String n, String e, String pw ,String p, String sID, String rID, String mesg) {
+	public ChatMessage(MsgType t, String n, String e, String pw ,String p,String g, String sID, String rID, String mesg) {
 		type = t;
 		name = n;
 		email = e;
 		password = pw;
 		phone = p;
+		gender = g;
 		sender = sID;
 		receiver = rID;
 		contents = mesg;
@@ -78,6 +80,12 @@ public class ChatMessage implements Serializable {
 	}
 	public String getPhone() {
 		return phone;
+	}
+	public void setGender (String g) {
+	    gender = g;
+	}
+	public String getGender() {
+		return gender;
 	}
 
 }
