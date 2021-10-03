@@ -18,15 +18,18 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
+
 
 
 public class login {
 
 	JFrame frame,mainFrame,creationFrame;
 	LoginPanel lp;FriendPanel fp;MainPanel mp; CreationPanel cp;
-	JTextField id,password,cName,cEmail,cPw,cPhone;
+	JTextField id,cName,cEmail,cPw,cPhone;
+	JPasswordField password;
 	JLabel friend;
 	ImageIcon loginBackground; ImageIcon createBackground;
 	JButton loginButton; JButton createButton; JButton pwModifyButton; JButton friendButton1; JButton friendButton2; JButton ChatButton1; JButton ChatButton2; JButton PlusButton1; JButton PlusButton2; 
@@ -35,6 +38,7 @@ public class login {
 	JRadioButton men,women;
 	ObjectInputStream reader;	// 수신용 스트림
     ObjectOutputStream writer;	// 송신용 스트림
+    int loginConfirm=0;
     String user,email,pw,phone,gender;
 	Socket sock;
 	//배경
@@ -58,9 +62,11 @@ public class login {
        // frame.setResizable(false);      
         
         id=new JTextField();
-        password=new JTextField();
+        password=new JPasswordField();
         id.setBounds(58, 220, 240, 39);
         password.setBounds(58, 258,240, 39);
+        password.setEchoChar('●');  //비밀번호의 입력을 *모양으로 표시되도록 설정
+
        
         loginButton = new JButton(new ImageIcon("src/image/로그인 버튼.png"));
         createButton = new JButton(new ImageIcon("src/image/계정생성 버튼.png"));
@@ -80,7 +86,8 @@ public class login {
         frame.getContentPane().add(lp);
         
         setUpNetworking();
-        
+        Thread readerThread = new Thread(new IncomingReader());
+        readerThread.start();
         
         
         frame.setVisible(true);
@@ -286,17 +293,18 @@ public class login {
 				phone = cPhone.getText();
 				gender=men.getText();
 				processCreation();
+				
 			}
 			if(e.getSource()==loginButton) {
 				email = id.getText();
 				pw=password.getText();
 				processLogin();
-				mainFrame();
-				frame.setVisible(false);
+				
 			}
 		}
 		
 	}
+	//////////////////////////////유저가 서버로 보내는 메시지/////////////////////////////////
 	//카카오 계정 생성 처리
 	public void processCreation() {
 		// TODO Auto-generated method stub
@@ -308,7 +316,7 @@ public class login {
       		  ex.printStackTrace();
       	  }
 	}
-
+	//카카오톡 로그인 처리
 	public void processLogin() {
 		// TODO Auto-generated method stub
 		try {
@@ -318,6 +326,36 @@ public class login {
     		  JOptionPane.showMessageDialog(null, "카카오톡 로그인 중 서버접속에 문제가 발생하였습니다.");
     		  ex.printStackTrace();
     	  }
+	}
+	
+	
+	///////////////////////////////유저가 서버로 부터 받는 메시지///////////////////////////////
+	public class IncomingReader implements Runnable {
+		public void run() {
+			ChatMessage message;             
+	        ChatMessage.MsgType type;
+	        try {
+	        	while (true) {
+	        		message = (ChatMessage) reader.readObject();     	 // 서버로기 부터의 메시지 대기
+	        		type = message.getType();
+	        		if(type == ChatMessage.MsgType.CREATION_SUCCESS) {
+	        			creationFrame.dispose();
+	        		}
+	        		else if(type == ChatMessage.MsgType.CREATION_FAILURE) {
+	        			JOptionPane.showMessageDialog(null, "이미 가입된 이메일입니다. 다른 이메일을 입력하세요");
+	        		}
+	        		else if (type == ChatMessage.MsgType.LOGIN) {
+	        			mainFrame();
+	    			    frame.setVisible(false);
+	        		}
+	        		else if (type == ChatMessage.MsgType.LOGIN_FAILURE) {
+	        			 JOptionPane.showMessageDialog(null, "Login이 실패하였습니다. 다시 로그인하세요");
+	        		}
+	        	}
+	        }catch(Exception ex) {
+	    		 System.out.println("유저 스레드 종료");		// 프레임이 종료될 경우 이를 통해 스레드 종료
+	    	 }
+		}
 	}
 }
 
