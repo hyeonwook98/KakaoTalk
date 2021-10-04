@@ -74,17 +74,25 @@ public class KakaoServer {
 					if (type == ChatMessage.MsgType.CREATION) {
 						handleCreation(message.getName(), message.getEmail(), message.getPw(), message.getPhone(),
 								message.getGender(), writer);
-					} else if (type == ChatMessage.MsgType.LOGIN) {
+					} 
+					else if (type == ChatMessage.MsgType.LOGIN) {
 						handleLogin(message.getEmail(), message.getPw(), writer);
-					} else if (type == ChatMessage.MsgType.LOGOUT) {
+					} 
+					else if (type == ChatMessage.MsgType.LOGOUT) {
 
-					} else if (type == ChatMessage.MsgType.USER_MSG) {
+					} 
+					else if (type == ChatMessage.MsgType.CONFIRM) {
+						handleConfirm(message.getEmail(), message.getPhone(), writer);
+					} 
+					else if (type == ChatMessage.MsgType.USER_MSG) {
 						// handleMessage(message.getSender(), message.getReceiver(),
 						// message.getContents());
-					} else if (type == ChatMessage.MsgType.NO_ACT) {
+					} 
+					else if (type == ChatMessage.MsgType.NO_ACT) {
 						// 무시해도 되는 메시지
 						continue;
-					} else {
+					} 
+					else {
 						// 정체가 확인되지 않는 이상한 메시지?
 						throw new Exception("S : 클라이언트에서 알수 없는 메시지 도착했음");
 					}
@@ -148,6 +156,7 @@ public class KakaoServer {
 
 	}
 
+
 	// 로그인 정보 받기
 	public void handleLogin(String email, String pw, ObjectOutputStream writer) {
 		// TODO Auto-generated method stub
@@ -164,6 +173,29 @@ public class KakaoServer {
 			} else {
 				System.out.println("없는 유저입니다.");
 				writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN_FAILURE, "", "", "", "", "", "", "", ""));
+			}
+
+		} catch (Exception ex) {
+			System.out.println("S : 서버에서 송신 중 이상 발생");
+			ex.printStackTrace();
+		}
+	}
+	// 비밀번호 재설정시 계정유뮤확인
+	public void handleConfirm(String email, String phone, ObjectOutputStream writer) {
+		// TODO Auto-generated method stub
+		String sql = "select 이메일,전화번호 from user where 이메일 like ? and 전화번호 like ? ;";
+		try {
+			pstmt = conn.prepareStatement(sql); // sql문을 conn을 이용해 전달, sql문을 DB에 전달한다고 생각하면 될듯! try catch문이 필요한 문장
+			pstmt.setString(1, email);
+			pstmt.setString(2, phone);
+			rs = pstmt.executeQuery(); // Statement를 넣어도되지만,앞에 넣었으므로 현재는 안넣음
+
+			if (rs.next()) {// 다음 레코드가 있을때
+				System.out.println("카카오톡 유저입니다.");
+				writer.writeObject(new ChatMessage(ChatMessage.MsgType.CONFIRM, "", "", "", "", "", "", "", ""));
+			} else {
+				System.out.println("없는 유저입니다.");
+				writer.writeObject(new ChatMessage(ChatMessage.MsgType.CONFIRM_FAILURE, "", "", "", "", "", "", "", ""));
 			}
 
 		} catch (Exception ex) {
