@@ -24,18 +24,16 @@ import javax.swing.JTextField;
 
 public class login {
 
-	JFrame frame, mainFrame, creationFrame, pwChangeFrame1;
+	JFrame frame, mainFrame, creationFrame, pwChangeFrame1 , pwChangeFrame2;
 	LoginPanel lp;
 	FriendPanel fp;
 	MainPanel mp;
 	CreationPanel cp;
-	pwChangePanel1 cp1;
+	pwChangePanel1 cp1; pwChangePanel2 cp2;
 	JTextField id, cName, cEmail, cPw, cPhone, pwEmail, pwPhone;
-	JPasswordField password;
+	JPasswordField password, changePw, changePwRe;
 	JLabel friend;
-	ImageIcon loginBackground;
-	ImageIcon createBackground;
-	ImageIcon changeBackground1;
+	ImageIcon loginBackground;	ImageIcon createBackground;	ImageIcon changeBackground1; ImageIcon changeBackground2;
 	JButton loginButton;	JButton createButton;	JButton pwChangeButton; 	JButton friendButton1; 	JButton friendButton2; 	JButton ChatButton1; 	JButton ChatButton2;
 	JButton PlusButton1;	JButton PlusButton2; 	JButton emoticonButton1; 	JButton emoticonButton2; 	JButton noticeButton1; 	JButton noticeButton2;
 	JButton settingButton1;	JButton settingButton2;	JButton searchButton;	JButton addButton; 	JButton confirmButton; JButton nextButton;
@@ -49,6 +47,7 @@ public class login {
 	String L_BACK = "src/image/카카오톡 로그인 화면.png";
 	String C_BACK = "src/image/카카오계정 생성 화면.png";
 	String C1_BACK = "src/image/비밀번호 재설정 화면1.png";
+	String C2_BACK = "src/image/비밀번호 재설정 화면2.png";
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -268,6 +267,40 @@ public class login {
         
 		pwChangeFrame1.setVisible(true);
 	}
+	
+	public void pwChangeFrame2() {
+		pwChangeFrame2=new JFrame("비밀번호 재설정");
+		// 클라이언드 프레임 창 조정
+		pwChangeFrame2.setBounds(89, 100, 387, 422);
+		//creationFrame.setDefaultCloseOperation(creationFrame.EXIT_ON_CLOSE);
+		pwChangeFrame2.getContentPane().setLayout(null);
+		pwChangeFrame2.setLocationRelativeTo(null);
+        // frame.setResizable(false);      
+       
+		changePw = new JPasswordField();
+		changePwRe = new JPasswordField();
+		
+		changePw.setBounds(180, 81, 180, 32);
+		changePwRe.setBounds(180, 119, 180, 32);
+		
+		//nextButton = new JButton();
+		//nextButton.setBounds(38, 271, 300, 38);
+		//confirmButton.setBorderPainted(false);
+		//nextButton.setContentAreaFilled(false);
+		//nextButton.setFocusPainted(false);
+		
+		//dbButtonListener b2 = new dbButtonListener();
+		//nextButton.addActionListener(b2);
+		
+        cp2=new pwChangePanel2();
+        cp2.setBounds(0,0, 370, 580);
+        //cp2.add(nextButton);
+        cp2.add(changePw);cp2.add(changePwRe);
+		pwChangeFrame2.getContentPane().add(cp2);
+        
+        
+		pwChangeFrame2.setVisible(true);
+	}
 
 	///////////////////////////////////////// 패널////////////////////////////////////////////////
 
@@ -324,6 +357,18 @@ public class login {
 			g.drawImage(changeBackground1.getImage(), 0, 0, 370, 330, null);
 		}
 	}
+	// 비빌번호 재설정 패널2
+		class pwChangePanel2 extends JPanel {
+			public pwChangePanel2() {
+				setLayout(null);
+				changeBackground2 = new ImageIcon(C2_BACK);
+			}
+
+			public void paintComponent(Graphics g) {
+				// loginBackground.draw(g);
+				g.drawImage(changeBackground2.getImage(), 0, 0, 370, 382, null);
+			}
+		}
 
 	private void setUpNetworking() {
 		try {
@@ -444,7 +489,8 @@ public class login {
 						JOptionPane.showMessageDialog(null, "Login이 실패하였습니다. 다시 로그인하세요");
 					}
 					else if (type == ChatMessage.MsgType.CONFIRM) {
-						
+						pwChangeFrame1.dispose();
+						pwChangeFrame2();
 					}
 					else if (type == ChatMessage.MsgType.CONFIRM_FAILURE) {
 						JOptionPane.showMessageDialog(null, "없는 카카오 계정입니다. 이메일과 전화번호를 다시 입력하세요");
