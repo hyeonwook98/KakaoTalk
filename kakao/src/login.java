@@ -36,12 +36,12 @@ public class login {
 	ImageIcon loginBackground;	ImageIcon createBackground;	ImageIcon changeBackground1; ImageIcon changeBackground2;
 	JButton loginButton;	JButton createButton;	JButton pwChangeButton; 	JButton friendButton1; 	JButton friendButton2; 	JButton ChatButton1; 	JButton ChatButton2;
 	JButton PlusButton1;	JButton PlusButton2; 	JButton emoticonButton1; 	JButton emoticonButton2; 	JButton noticeButton1; 	JButton noticeButton2;
-	JButton settingButton1;	JButton settingButton2;	JButton searchButton;	JButton addButton; 	JButton confirmButton; JButton nextButton;
+	JButton settingButton1;	JButton settingButton2;	JButton searchButton;	JButton addButton; 	JButton confirmButton; JButton nextButton; JButton successButton;
 	JRadioButton men, women;
 	ObjectInputStream reader; // 수신용 스트림
 	ObjectOutputStream writer; // 송신용 스트림
 	int loginConfirm = 0;
-	String user, email, pw, phone, gender;
+	String user, email, pw,pw2, phone, gender;
 	Socket sock;
 	// 배경
 	String L_BACK = "src/image/카카오톡 로그인 화면.png";
@@ -280,22 +280,24 @@ public class login {
 		changePw = new JPasswordField();
 		changePwRe = new JPasswordField();
 		
+		changePw.setEchoChar('●');
+		changePwRe.setEchoChar('●');
 		changePw.setBounds(180, 81, 180, 32);
 		changePwRe.setBounds(180, 119, 180, 32);
 		
-		//nextButton = new JButton();
-		//nextButton.setBounds(38, 271, 300, 38);
-		//confirmButton.setBorderPainted(false);
-		//nextButton.setContentAreaFilled(false);
-		//nextButton.setFocusPainted(false);
+		successButton = new JButton();
+		successButton.setBounds(46, 283, 275, 37);
+		//successButton.setBorderPainted(false);
+		successButton.setContentAreaFilled(false);
+		successButton.setFocusPainted(false);
 		
-		//dbButtonListener b2 = new dbButtonListener();
-		//nextButton.addActionListener(b2);
+		dbButtonListener b2 = new dbButtonListener();
+		successButton.addActionListener(b2);
 		
         cp2=new pwChangePanel2();
         cp2.setBounds(0,0, 370, 580);
         //cp2.add(nextButton);
-        cp2.add(changePw);cp2.add(changePwRe);
+        cp2.add(changePw);cp2.add(changePwRe); cp2.add(successButton);
 		pwChangeFrame2.getContentPane().add(cp2);
         
         
@@ -425,6 +427,20 @@ public class login {
 				phone = pwPhone.getText();
 				processPwChange1();
 			}
+			if (e.getSource() == successButton) {
+				pw = changePw.getText();
+				pw2 = changePwRe.getText();
+				if(pw2.length()>7) {
+					if(pw.equals(pw2)==true) {
+						processPwChange2();
+					}
+					else {
+						JOptionPane.showMessageDialog(null, "비밀번호가 일치하지 않습니다. 비밀번호를 다시 입력하세요");
+					}
+				}
+				else 
+					JOptionPane.showMessageDialog(null, "비밀번호를 8~32자리로 설정해주세요");
+			}
 		}
 
 	}
@@ -442,6 +458,8 @@ public class login {
 			ex.printStackTrace();
 		}
 	}
+
+	
 
 	// 카카오톡 로그인 처리
 	public void processLogin() {
@@ -462,6 +480,17 @@ public class login {
 			writer.flush();
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(null, "카카오톡 계정확인 중 서버접속에 문제가 발생하였습니다.");
+			ex.printStackTrace();
+		}
+	}
+	//비밀번호 변경
+	public void processPwChange2() {
+		// TODO Auto-generated method stub
+		try {
+			writer.writeObject(new ChatMessage(ChatMessage.MsgType.CHANGE, "", email, pw2, phone, "", "", "", ""));
+			writer.flush();
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(null, "비밀번호 변경 중 서버접속에 문제가 발생하였습니다.");
 			ex.printStackTrace();
 		}
 	}

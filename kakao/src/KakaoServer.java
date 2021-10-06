@@ -84,6 +84,9 @@ public class KakaoServer {
 					else if (type == ChatMessage.MsgType.CONFIRM) {
 						handleConfirm(message.getEmail(), message.getPhone(), writer);
 					} 
+					else if(type == ChatMessage.MsgType.CHANGE) {
+						handleChange(message.getEmail(),message.getPw(),message.getPhone());
+					}
 					else if (type == ChatMessage.MsgType.USER_MSG) {
 						// handleMessage(message.getSender(), message.getReceiver(),
 						// message.getContents());
@@ -157,6 +160,8 @@ public class KakaoServer {
 	}
 
 
+	
+
 	// 로그인 정보 받기
 	public void handleLogin(String email, String pw, ObjectOutputStream writer) {
 		// TODO Auto-generated method stub
@@ -197,6 +202,24 @@ public class KakaoServer {
 				System.out.println("없는 유저입니다.");
 				writer.writeObject(new ChatMessage(ChatMessage.MsgType.CONFIRM_FAILURE, "", "", "", "", "", "", "", ""));
 			}
+
+		} catch (Exception ex) {
+			System.out.println("S : 서버에서 송신 중 이상 발생");
+			ex.printStackTrace();
+		}
+	}
+	// 비밀번호 변경
+	public void handleChange(String email,String pw,String phone) {
+		// TODO Auto-generated method stub
+		String sql = "update user set 비밀번호 = ? where 이메일 like ? and 전화번호 like ? ;";
+		try {
+			pstmt = conn.prepareStatement(sql); // sql문을 conn을 이용해 전달, sql문을 DB에 전달한다고 생각하면 될듯! try catch문이 필요한 문장
+			pstmt.setString(1, pw);
+			pstmt.setString(2, email);
+			pstmt.setString(3, phone);
+			pstmt.executeUpdate();
+			System.out.println("successfully updating!!!");
+			pstmt.close();
 
 		} catch (Exception ex) {
 			System.out.println("S : 서버에서 송신 중 이상 발생");
