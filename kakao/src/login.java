@@ -20,13 +20,14 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 public class login {
 
 	JFrame frame, mainFrame, creationFrame, pwChangeFrame1 , pwChangeFrame2;
 	LoginPanel lp;
-	FriendPanel fp;
+	FriendPanel fp; FriendListPanel flp;
 	MainPanel mp;
 	CreationPanel cp;
 	pwChangePanel1 cp1; pwChangePanel2 cp2;
@@ -40,6 +41,7 @@ public class login {
 	JRadioButton men, women;
 	ObjectInputStream reader; // 수신용 스트림
 	ObjectOutputStream writer; // 송신용 스트림
+	JScrollPane scrollPane;
 	int loginConfirm = 0;
 	String user, email, pw,pw2, phone, gender;
 	Socket sock;
@@ -371,6 +373,13 @@ public class login {
 				g.drawImage(changeBackground2.getImage(), 0, 0, 370, 382, null);
 			}
 		}
+		//유저의 친구목록 패널
+		class FriendListPanel extends JPanel{
+			public FriendListPanel() {
+				setLayout(null);
+
+			}
+		}
 
 	private void setUpNetworking() {
 		try {
@@ -433,6 +442,8 @@ public class login {
 				if(pw2.length()>7) {
 					if(pw.equals(pw2)==true) {
 						processPwChange2();
+						JOptionPane.showMessageDialog(null, "비밀번호가 변경되었습니다.");
+						pwChangeFrame2.dispose();;
 					}
 					else {
 						JOptionPane.showMessageDialog(null, "비밀번호가 일치하지 않습니다. 비밀번호를 다시 입력하세요");
@@ -515,14 +526,14 @@ public class login {
 						frame.setVisible(false);
 					} 
 					else if (type == ChatMessage.MsgType.LOGIN_FAILURE) {
-						JOptionPane.showMessageDialog(null, "Login이 실패하였습니다. 다시 로그인하세요");
+						JOptionPane.showMessageDialog(null, "Login에 실패하였습니다. 다시 로그인하세요");
 					}
 					else if (type == ChatMessage.MsgType.CONFIRM) {
 						pwChangeFrame1.dispose();
 						pwChangeFrame2();
 					}
 					else if (type == ChatMessage.MsgType.CONFIRM_FAILURE) {
-						JOptionPane.showMessageDialog(null, "없는 카카오 계정입니다. 이메일과 전화번호를 다시 입력하세요");
+						JOptionPane.showMessageDialog(null, "카카오 계정이 존재하지 않습니다. 이메일과 전화번호를 다시 입력하세요");
 					}
 				}
 			} catch (Exception ex) {
