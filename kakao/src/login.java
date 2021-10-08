@@ -25,23 +25,23 @@ import javax.swing.JTextField;
 
 public class login {
 
-	JFrame frame, mainFrame, creationFrame, pwChangeFrame1 , pwChangeFrame2;
+	JFrame frame, mainFrame, creationFrame, pwChangeFrame1 , pwChangeFrame2 , friendAddFrame;
 	LoginPanel lp;
 	FriendPanel fp; FriendListPanel flp;
 	MainPanel mp;
 	CreationPanel cp;
-	pwChangePanel1 cp1; pwChangePanel2 cp2;
+	pwChangePanel1 cp1; pwChangePanel2 cp2; friendAddPanel ap;
 	JTextField id, cName, cEmail, cPw, cPhone, pwEmail, pwPhone;
 	JPasswordField password, changePw, changePwRe;
 	JLabel friend;
-	ImageIcon loginBackground;	ImageIcon createBackground;	ImageIcon changeBackground1; ImageIcon changeBackground2;
+	ImageIcon loginBackground;	ImageIcon createBackground;	ImageIcon changeBackground1; ImageIcon changeBackground2; ImageIcon addBackground;
 	JButton loginButton;	JButton createButton;	JButton pwChangeButton; 	JButton friendButton1; 	JButton friendButton2; 	JButton ChatButton1; 	JButton ChatButton2;
 	JButton PlusButton1;	JButton PlusButton2; 	JButton emoticonButton1; 	JButton emoticonButton2; 	JButton noticeButton1; 	JButton noticeButton2;
 	JButton settingButton1;	JButton settingButton2;	JButton searchButton;	JButton addButton; 	JButton confirmButton; JButton nextButton; JButton successButton;
 	JRadioButton men, women;
 	ObjectInputStream reader; // 수신용 스트림
 	ObjectOutputStream writer; // 송신용 스트림
-	JScrollPane scrollPane;
+	JScrollPane scroll;
 	int loginConfirm = 0;
 	String user, email, pw,pw2, phone, gender;
 	Socket sock;
@@ -50,6 +50,7 @@ public class login {
 	String C_BACK = "src/image/카카오계정 생성 화면.png";
 	String C1_BACK = "src/image/비밀번호 재설정 화면1.png";
 	String C2_BACK = "src/image/비밀번호 재설정 화면2.png";
+	String A_BACK = "src/image/친구추가 화면.png";
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -157,6 +158,9 @@ public class login {
 		addButton.setBorderPainted(false);
 		addButton.setContentAreaFilled(false);
 		addButton.setFocusPainted(false);
+		
+		ButtonListener b1 = new ButtonListener();
+		addButton.addActionListener(b1);
 
 		friend = new JLabel("친구");
 		friend.setBounds(18, 20, 70, 80);
@@ -177,8 +181,18 @@ public class login {
 		fp.add(friend);
 		fp.add(searchButton);
 		fp.add(addButton);
+		
+		flp = new FriendListPanel();
+		flp.setBounds(66,79,328,551);
+		flp.setBackground(Color.white);
+		/*
+		scroll = new JScrollPane();
+		scroll.setViewportView(ChatButton1);
+		*/
+		
 		mainFrame.getContentPane().add(mp);
 		mainFrame.getContentPane().add(fp);
+		mainFrame.getContentPane().add(flp);
 		mainFrame.setVisible(true);
 	}
 
@@ -270,6 +284,7 @@ public class login {
 		pwChangeFrame1.setVisible(true);
 	}
 	
+	
 	public void pwChangeFrame2() {
 		pwChangeFrame2=new JFrame("비밀번호 재설정");
 		// 클라이언드 프레임 창 조정
@@ -304,6 +319,35 @@ public class login {
         
         
 		pwChangeFrame2.setVisible(true);
+	}
+	
+	public void friendAddFrame() {
+		friendAddFrame=new JFrame("친구 추가");
+		// 클라이언드 프레임 창 조정
+		friendAddFrame.setBounds(95, 85, 337, 478);
+		//creationFrame.setDefaultCloseOperation(creationFrame.EXIT_ON_CLOSE);
+		friendAddFrame.getContentPane().setLayout(null);
+		friendAddFrame.setLocationRelativeTo(null);
+        // frame.setResizable(false);      
+       
+		/*
+		successButton = new JButton();
+		successButton.setBounds(46, 283, 275, 37);
+		//successButton.setBorderPainted(false);
+		successButton.setContentAreaFilled(false);
+		successButton.setFocusPainted(false);
+		
+		dbButtonListener b2 = new dbButtonListener();
+		successButton.addActionListener(b2);*/
+		
+        ap=new friendAddPanel();
+        ap.setBounds(0,0, 370, 580);
+        //cp2.add(nextButton);
+        
+        friendAddFrame.getContentPane().add(ap);
+        
+        
+        friendAddFrame.setVisible(true);
 	}
 
 	///////////////////////////////////////// 패널////////////////////////////////////////////////
@@ -380,6 +424,19 @@ public class login {
 
 			}
 		}
+		
+		//친구추가 패널
+		class friendAddPanel extends JPanel{
+			public friendAddPanel() {
+				setLayout(null);
+				addBackground = new ImageIcon(A_BACK);
+			}
+
+			public void paintComponent(Graphics g) {
+				// loginBackground.draw(g);
+				g.drawImage(addBackground.getImage(), 0, 0, 320, 438, null);
+			}
+		}
 
 	private void setUpNetworking() {
 		try {
@@ -406,6 +463,9 @@ public class login {
 			}
 			if (e.getSource() == pwChangeButton) {
 				pwChangeFrame1();
+			}
+			if (e.getSource() == addButton) {
+				friendAddFrame();
 			}
 		}
 	}
