@@ -31,13 +31,13 @@ public class login {
 	MainPanel mp;
 	CreationPanel cp;
 	pwChangePanel1 cp1; pwChangePanel2 cp2; friendAddPanel ap;
-	JTextField id, cName, cEmail, cPw, cPhone, pwEmail, pwPhone;
+	JTextField id, cName, cEmail, cPw, cPhone, pwEmail, pwPhone, aName , aPhone;
 	JPasswordField password, changePw, changePwRe;
 	JLabel friend;
 	ImageIcon loginBackground;	ImageIcon createBackground;	ImageIcon changeBackground1; ImageIcon changeBackground2; ImageIcon addBackground;
 	JButton loginButton;	JButton createButton;	JButton pwChangeButton; 	JButton friendButton1; 	JButton friendButton2; 	JButton ChatButton1; 	JButton ChatButton2;
 	JButton PlusButton1;	JButton PlusButton2; 	JButton emoticonButton1; 	JButton emoticonButton2; 	JButton noticeButton1; 	JButton noticeButton2;
-	JButton settingButton1;	JButton settingButton2;	JButton searchButton;	JButton addButton; 	JButton confirmButton; JButton nextButton; JButton successButton;
+	JButton settingButton1;	JButton settingButton2;	JButton searchButton;	JButton addButton; 	JButton confirmButton; JButton nextButton; JButton successButton; JButton fAddButton;
 	JRadioButton men, women;
 	ObjectInputStream reader; // 수신용 스트림
 	ObjectOutputStream writer; // 송신용 스트림
@@ -330,19 +330,26 @@ public class login {
 		friendAddFrame.setLocationRelativeTo(null);
         // frame.setResizable(false);      
        
-		/*
-		successButton = new JButton();
-		successButton.setBounds(46, 283, 275, 37);
+		aName = new JTextField();
+		aPhone = new JTextField();
+		
+		
+		aName.setBounds(100, 92, 150, 32);
+		aPhone.setBounds(100, 160, 150, 32);
+		
+		fAddButton = new JButton();
+		fAddButton.setBounds(235, 378, 70, 34);
 		//successButton.setBorderPainted(false);
-		successButton.setContentAreaFilled(false);
-		successButton.setFocusPainted(false);
+		fAddButton.setContentAreaFilled(false);
+		fAddButton.setFocusPainted(false);
 		
 		dbButtonListener b2 = new dbButtonListener();
-		successButton.addActionListener(b2);*/
+		fAddButton.addActionListener(b2);
 		
         ap=new friendAddPanel();
         ap.setBounds(0,0, 370, 580);
-        //cp2.add(nextButton);
+        ap.add(aName); ap.add(aPhone);
+        ap.add(fAddButton);
         
         friendAddFrame.getContentPane().add(ap);
         
@@ -512,6 +519,11 @@ public class login {
 				else 
 					JOptionPane.showMessageDialog(null, "비밀번호를 8~32자리로 설정해주세요");
 			}
+			if (e.getSource() == fAddButton) {
+				phone = aPhone.getText();
+				user = aName.getText();
+				processFriendAdd();
+			}
 		}
 
 	}
@@ -530,7 +542,6 @@ public class login {
 		}
 	}
 
-	
 
 	// 카카오톡 로그인 처리
 	public void processLogin() {
@@ -566,6 +577,17 @@ public class login {
 		}
 	}
 
+	public void processFriendAdd() {
+		// TODO Auto-generated method stub
+		try {
+			writer.writeObject(new ChatMessage(ChatMessage.MsgType.ADD, user, "", "", phone, "", "", "", ""));
+			writer.flush();
+		} catch (Exception ex) {
+			JOptionPane.showMessageDialog(null, "친구추가 중 서버접속에 문제가 발생하였습니다.");
+			ex.printStackTrace();
+		}
+	}
+
 	/////////////////////////////// 유저가 서버로 부터 받는 메시지///////////////////////////////
 	public class IncomingReader implements Runnable {
 		public void run() {
@@ -594,6 +616,12 @@ public class login {
 					}
 					else if (type == ChatMessage.MsgType.CONFIRM_FAILURE) {
 						JOptionPane.showMessageDialog(null, "카카오 계정이 존재하지 않습니다. 이메일과 전화번호를 다시 입력하세요");
+					}
+					else if (type == ChatMessage.MsgType.ADD_FAILURE) {
+						JOptionPane.showMessageDialog(null, "카카오 계정이 존재하지 않습니다. 이메일과 전화번호를 다시 입력하세요");
+					}
+					else if (type == ChatMessage.MsgType.FRIEND_EXIST) {
+						JOptionPane.showMessageDialog(null, "이미 존재하는 친구입니다.");
 					}
 				}
 			} catch (Exception ex) {

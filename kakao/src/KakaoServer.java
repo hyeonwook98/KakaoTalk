@@ -16,6 +16,8 @@ public class KakaoServer {
 	PreparedStatement pstmt;// 파라미터를 물음표로 받을 수 있음. 어떤 정보를 조건(물음표)에 대해 가져오려할 때 유용하게 사용 가능. 쿼리문을 좀더 편하게 사용하기위해
 							// 사용.
 	ResultSet rs; // 쿼리 전송의 결과 객체를 반환하기위함
+	int usernumber;
+	int friendnumber;
 
 	public static void main(String[] args) {
 		new KakaoServer().go();
@@ -86,6 +88,9 @@ public class KakaoServer {
 					} 
 					else if(type == ChatMessage.MsgType.CHANGE) {
 						handleChange(message.getEmail(),message.getPw(),message.getPhone());
+					}
+					else if(type == ChatMessage.MsgType.ADD) {
+						handleAdd(message.getName(),message.getPhone(),writer);
 					}
 					else if (type == ChatMessage.MsgType.USER_MSG) {
 						// handleMessage(message.getSender(), message.getReceiver(),
@@ -160,12 +165,11 @@ public class KakaoServer {
 	}
 
 
-	
 
 	// 로그인 정보 받기
 	public void handleLogin(String email, String pw, ObjectOutputStream writer) {
 		// TODO Auto-generated method stub
-		String sql = "select 이메일,비밀번호 from user where 이메일 like ? and 비밀번호 like ? ;";
+		String sql = "select 유저번호,이메일,비밀번호 from user where 이메일 like ? and 비밀번호 like ? ;";
 		try {
 			pstmt = conn.prepareStatement(sql); // sql문을 conn을 이용해 전달, sql문을 DB에 전달한다고 생각하면 될듯! try catch문이 필요한 문장
 			pstmt.setString(1, email);
@@ -173,6 +177,7 @@ public class KakaoServer {
 			rs = pstmt.executeQuery(); // Statement를 넣어도되지만,앞에 넣었으므로 현재는 안넣음
 
 			if (rs.next()) {// 다음 레코드가 있을때
+				usernumber=rs.getInt(1);
 				System.out.println("카카오톡 유저입니다.");
 				writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN, "", "", "", "", "", "", "", ""));
 			} else {
@@ -224,6 +229,80 @@ public class KakaoServer {
 		} catch (Exception ex) {
 			System.out.println("S : 서버에서 송신 중 이상 발생");
 			ex.printStackTrace();
+		}
+	}
+	
+	public void handleAdd(String name, String phone,ObjectOutputStream writer) {
+		// TODO Auto-generated method stub
+		int a = 0; //a가 0이면 친구추가 진행, 1이면 서버에 친구정보 없음
+		int b= 0; //b가 0이면 친구추가 완료 , 1이면 이미 존재하는 친구
+		String sql = "insert into friend(유저번호,친구번호)values(?,?);";
+		String sql2 = "select 유저번호,이름,전화번호 from user where 이름 like ? and 전화번호 like ?;";
+		String sql3 = "select 유저번호,친구번호 from friend where 유저번호 like ? and 친구번호 like ?;";
+		try {
+			pstmt = conn.prepareStatement(sql2); // sql문을 conn을 이용해 전달, sql문을 DB에 전달한다고 생각하면 될듯! try catch문이 필요한 문장
+			pstmt.setString(1, name);
+			pstmt.setString(2, phone);
+			rs = pstmt.executeQuery(); // Statement를 넣어도되지만,앞에 넣었으므로 현재는 안넣음
+
+			if (rs.next()) {// 다음 레코드가 있을때 -> 친구테이블에 정보삽입
+				 friendnumber=rs.getInt(1);
+			}
+			else {
+				a=1;
+				writer.writeObject(
+						new ChatMessage(ChatMessage.MsgType.ADD_FAILURE, "", "", "", "", "", "", "", ""));
+			}
+
+		} catch (Exception ex) {
+			System.out.println("S : 서버에서 송신 중 이상 발생");
+			ex.printStackTrace();
+		}
+		if (a == 0) {
+			try {
+				pstmt = conn.prepareStatement(sql3); // sql문을 conn을 이용해 전달, sql문을 DB에 전달한다고 생각하면 될듯! try catch문이 필요한 문장
+				pstmt.setInt(1, usernumber);
+				pstmt.setInt(2, friendnumber);
+				rs = pstmt.executeQuery(); // Statement를 넣어도되지만,앞에 넣었으므로 현재는 안넣음
+
+				if (rs.next()) {// 다음 레코드가 있을때 -> 친구테이블에 정보삽입
+					 b=1;
+					 writer.writeObject(
+								new ChatMessage(ChatMessage.MsgType.FRIEND_EXIST, "", "", "", "", "", "", "", ""));
+				}
+				else {
+					writer.writeObject(
+							new ChatMessage(ChatMessage.MsgType.ADD, "", "", "", "", "", "", "", ""));
+				}
+
+			} catch (Exception ex) {
+				System.out.println("S : 서버에서 송신 중 이상 발생");
+				ex.printStackTrace();
+			}
+			if(b==0) {
+				
+			try {
+				
+				pstmt = conn.prepareStatement(sql); // sql문을 conn을 이용해 전달, sql문을 DB에 전달한다고 생각하면 될듯! try catch문이 필요한 문장
+				pstmt.setInt(1, usernumber); // 물음표가 있는 위치 순서로 번호가 지정됨. 물음표의 개수만큼 만들어줘야함.(개수 안맞추면 오류가 난다!)
+				pstmt.setInt(2, friendnumber);
+
+				// WORD는 String으로 받은 String의 cname, cphone, ctype, cnumber를 전달해서 세팅해서 실행하도록 해줌.
+				// cname, cphone, ctype, cnumber은 해당되는 부분의 JTextField에서 적힌 정보를 받아와야함!(텍스트필드
+				// 변수.getText(););
+
+				int result = pstmt.executeUpdate(); // 쿼리 전송의 결과 객체를 반환하기위함. 0이면 오류, 1이면 제대로 실행된 것.
+				// executeUpdate는 insert, update, delete 문에서 사용
+				// executeQuery는 select문에서 사용.
+				System.out.println("result = " + result);
+
+				pstmt.close(); // 종료
+				conn.close(); // 종료
+			} catch (Exception ex) {
+				System.out.println("S : 서버에서 송신 중 이상 발생");
+				ex.printStackTrace();
+			}
+			}
 		}
 	}
 
