@@ -3,21 +3,26 @@ import java.net.*;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 public class KakaoServer {
 	// 접속한 클라이언트의 사용자 이름과 출력 스트림을 해쉬 테이블에 보관
 	// 나중에 특정 사용자에게 메시지를 보낼때 사용. 현재 접속해 있는 사용자의 전체 리스트를 구할때도 사용
 
-	ArrayList<String> who = new ArrayList(); // string 타입만 사용가능
-	String[] array = null;
+	ArrayList friend;
+	
+	//String[] array = null;
 	DB db = new DB();// DB 연결을 위해 객체 생성
 	Connection conn = db.conn(); // 자바와 DB 연결통로 객체인 Connection 객체 생성
 	PreparedStatement pstmt;// 파라미터를 물음표로 받을 수 있음. 어떤 정보를 조건(물음표)에 대해 가져오려할 때 유용하게 사용 가능. 쿼리문을 좀더 편하게 사용하기위해
 							// 사용.
+	
 	ResultSet rs; // 쿼리 전송의 결과 객체를 반환하기위함
-	int usernumber;
-	int friendnumber;
+	
+	int usernumber; //로그인한 유저 고유번호
+	int friendnumber; //유저의 친구 고유번호
+	int count; //친구가 몇명인지
 
 	public static void main(String[] args) {
 		new KakaoServer().go();
@@ -170,6 +175,11 @@ public class KakaoServer {
 	public void handleLogin(String email, String pw, ObjectOutputStream writer) {
 		// TODO Auto-generated method stub
 		String sql = "select 유저번호,이메일,비밀번호 from user where 이메일 like ? and 비밀번호 like ? ;";
+		String sql2 = "select 친구번호 from user,friend where user.유저번호 like ?;";
+		String sql3 = "select COUNT(*)AS친구번호 from user,friend where user.유저번호 like ?;";
+		friend= new ArrayList(); 
+		
+		int a=0; //a가 0이면 로그인 성공 , a가 1이면 로그인 실패
 		try {
 			pstmt = conn.prepareStatement(sql); // sql문을 conn을 이용해 전달, sql문을 DB에 전달한다고 생각하면 될듯! try catch문이 필요한 문장
 			pstmt.setString(1, email);
@@ -181,6 +191,7 @@ public class KakaoServer {
 				System.out.println("카카오톡 유저입니다.");
 				writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN, "", "", "", "", "", "", "", ""));
 			} else {
+				a=1;
 				System.out.println("없는 유저입니다.");
 				writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN_FAILURE, "", "", "", "", "", "", "", ""));
 			}
@@ -188,6 +199,49 @@ public class KakaoServer {
 		} catch (Exception ex) {
 			System.out.println("S : 서버에서 송신 중 이상 발생");
 			ex.printStackTrace();
+		}
+		//여기 다시생각해보기 현재 여기서 오류뜸
+		//로그인한 유저의 친구가 누군지 알기
+		
+		if(a==0) {
+			try {
+				pstmt = conn.prepareStatement(sql3);
+				pstmt.setInt(1,usernumber);
+				rs = pstmt.executeQuery();
+				if (rs.next()) {// 다음 레코드가 있을때
+					count=rs.getInt(1);
+				}
+				else
+					count=0;
+				
+				System.out.println(count);
+				System.out.println(friend.size());
+
+
+			} catch (Exception ex) {
+				System.out.println("S : 서버에서 송신 중 이상 발생");
+				ex.printStackTrace();
+			}
+			
+			//친구가 1명이상일때
+			if(count>0) {
+				try {
+					pstmt = conn.prepareStatement(sql2);
+					pstmt.setInt(1,usernumber);
+					rs = pstmt.executeQuery();
+					while (rs.next()) {// 다음 레코드가 있을때
+				         friend.add(rs.getInt(1));
+					}
+					
+					for(int i=0;i<friend.size();i++) {
+						System.out.println(friend.get(i));
+					}
+				} 
+				catch (SQLException ex) {
+					System.out.println("S : 서버에서 송신 중 이상 발생");
+					ex.printStackTrace();
+				}
+			}
 		}
 	}
 	// 비밀번호 재설정시 계정유뮤확인
