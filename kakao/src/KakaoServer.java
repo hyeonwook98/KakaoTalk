@@ -174,7 +174,7 @@ public class KakaoServer {
 	// 로그인 정보 받기
 	public void handleLogin(String email, String pw, ObjectOutputStream writer) {
 		// TODO Auto-generated method stub
-		String sql = "select 유저번호,이메일,비밀번호 from user where 이메일 like ? and 비밀번호 like ? ;";
+		String sql = "select 유저번호 from user where 이메일 like ? and 비밀번호 like ? ;";
 		String sql2 = "select 친구번호 from user,friend where user.유저번호 like ?;";
 		String sql3 = "select 이름,성별 from user where 유저번호 like ? ;";
 		friend= new ArrayList(); 
@@ -206,14 +206,14 @@ public class KakaoServer {
 		if(a==0) {
 			
 			//친구가 1명이상일때
+			//유저와 친구를 맺은 사람이 누구인지 확인하기
 				try {
 					pstmt = conn.prepareStatement(sql2);
 					pstmt.setInt(1,usernumber);
 					rs = pstmt.executeQuery();
 					while (rs.next()) {// 다음 레코드가 있을때
-				         friend.add(rs.getInt(1));
+				         friend.add(rs.getInt(1));  //해당 친구번호를 arraylist에 저장
 					}
-					
 					for(int i=0;i<friend.size();i++) {
 						System.out.println(friend.get(i));
 					}
@@ -222,6 +222,7 @@ public class KakaoServer {
 					System.out.println("S : 서버에서 송신 중 이상 발생");
 					ex.printStackTrace();
 				}
+				//해당 친구의 이름과 성별을 유저에게 알려줘야함
 				try {
 					pstmt = conn.prepareStatement(sql3);
 					pstmt.setInt(1,usernumber);

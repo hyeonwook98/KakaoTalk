@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.Scrollbar;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ObjectInputStream;
@@ -33,15 +34,17 @@ public class login {
 	pwChangePanel1 cp1; pwChangePanel2 cp2; friendAddPanel ap;
 	JTextField id, cName, cEmail, cPw, cPhone, pwEmail, pwPhone, aName , aPhone;
 	JPasswordField password, changePw, changePwRe;
-	JLabel friend;
+	JLabel friend,name,name2 ,fcount;
 	ImageIcon loginBackground;	ImageIcon createBackground;	ImageIcon changeBackground1; ImageIcon changeBackground2; ImageIcon addBackground;
 	JButton loginButton;	JButton createButton;	JButton pwChangeButton; 	JButton friendButton1; 	JButton friendButton2; 	JButton ChatButton1; 	JButton ChatButton2;
 	JButton PlusButton1;	JButton PlusButton2; 	JButton emoticonButton1; 	JButton emoticonButton2; 	JButton noticeButton1; 	JButton noticeButton2;
 	JButton settingButton1;	JButton settingButton2;	JButton searchButton;	JButton addButton; 	JButton confirmButton; JButton nextButton; JButton successButton; JButton fAddButton;
+	JButton profileButton; JButton musicButton; JButton chatButton; JButton profileButton2;JButton musicButton2;JButton chatButton3;
 	JRadioButton men, women;
 	ObjectInputStream reader; // 수신용 스트림
 	ObjectOutputStream writer; // 송신용 스트림
 	JScrollPane scroll;
+	Scrollbar bar;
 	int loginConfirm = 0;
 	String user, email, pw,pw2, phone, gender;
 	Socket sock;
@@ -182,17 +185,68 @@ public class login {
 		fp.add(searchButton);
 		fp.add(addButton);
 		
+		//유저꺼
+		name = new JLabel("김현욱");
+		name.setBounds(77,20,45,33);
+		name.setFont(name.getFont().deriveFont(14.0f));
+		
+		profileButton = new JButton(new ImageIcon("src/image/남성.jpg"));
+		profileButton.setBounds(19,10,50,50);
+		
+		chatButton = new JButton();
+		chatButton.setBounds(0,0,313,70);
+		chatButton.setContentAreaFilled(false);
+		chatButton.setFocusPainted(false);
+		
+		musicButton = new JButton();
+		musicButton.setBounds(160,20,140,30);
+		//musicButton.setContentAreaFilled(false);
+		//musicButton.setFocusPainted(false);
+		
 		flp = new FriendListPanel();
-		flp.setBounds(66,79,328,551);
+		flp.setBounds(66,79,320,551);
 		flp.setBackground(Color.white);
-		/*
-		scroll = new JScrollPane();
-		scroll.setViewportView(ChatButton1);
-		*/
+		
+		scroll = new JScrollPane(flp,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.setViewportView(flp);
+		scroll.setBounds(66,79,329,553);
+		flp.add(name); flp.add(profileButton);  flp.add(musicButton);flp.add(chatButton); 
+		
+		//각 버튼들 +55씩해주면 위치맞음
+		//각 버튼들 +55씩해주면 위치맞음
+		//각 버튼들 +55씩해주면 위치맞음
+		//각 버튼들 +55씩해주면 위치맞음
+		name2 = new JLabel("최승표");
+		name2.setBounds(77,112,45,33);
+		name2.setFont(name2.getFont().deriveFont(14.0f));
+		
+		profileButton2 = new JButton(new ImageIcon("src/image/여성.jpg"));
+		profileButton2.setBounds(19,108,40,40);
+		
+		chatButton3 = new JButton();
+		chatButton3.setBounds(0,100,313,55);
+		chatButton3.setContentAreaFilled(false);
+		chatButton3.setFocusPainted(false);
+		
+		musicButton2 = new JButton();
+		musicButton2.setBounds(160,115,140,25);
+		
+		flp.add(profileButton2); flp.add(chatButton3); flp.add(musicButton2); flp.add(name2);
+		
+		fcount = new JLabel("친구");
+		fcount.setBounds(18,77,40,20);
+		fcount.setFont(fcount.getFont().deriveFont(12.0f));
+		
+		flp.add(fcount);
+		//
+		
+		
 		
 		mainFrame.getContentPane().add(mp);
 		mainFrame.getContentPane().add(fp);
-		mainFrame.getContentPane().add(flp);
+		mainFrame.getContentPane().add(scroll);
+		
+		
 		mainFrame.setVisible(true);
 	}
 
