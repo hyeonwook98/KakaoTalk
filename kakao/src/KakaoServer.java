@@ -230,15 +230,23 @@ public class KakaoServer {
 					//유저정보에 대한 정보
 					while (rs.next()) {
 						System.out.println(rs.getString(1)+rs.getString(2));
+						writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(1) , "", "", "", rs.getString(2), "", "", ""));
 					}
+					//친구에 대한 정보
 				    for(int i=0;i<friend.size();i++) {
 				    	pstmt.setInt(1, (int) friend.get(i));
 				    	rs = pstmt.executeQuery();
 				    	while (rs.next()) {
 				    		System.out.println(rs.getString(1)+rs.getString(2));
-						}
+				    		writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(1) , "", "", "", rs.getString(2), "", "", ""));
+				    		if(rs.next()==false)  
+				    		writer.writeObject(new ChatMessage(ChatMessage.MsgType.END,"" , "", "", "", "", "", "", ""));
+				    	}
 				    }
-				} 
+				    
+					  
+
+				    				} 
 				catch (Exception ex) {
 					System.out.println("S : 서버에서 송신 중 이상 발생");
 					ex.printStackTrace();
