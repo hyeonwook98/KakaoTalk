@@ -15,6 +15,7 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -34,6 +35,7 @@ public class login {
 	FriendPanel fp; FriendListPanel flp; UserPanel up;
 	MainPanel mp;
 	CreationPanel cp;
+	JPanel FriendListPanel;
 	pwChangePanel1 cp1; pwChangePanel2 cp2; friendAddPanel ap;
 	JTextField id, cName, cEmail, cPw, cPhone, pwEmail, pwPhone, aName , aPhone;
 	JPasswordField password, changePw, changePwRe;
@@ -192,7 +194,7 @@ public class login {
 		fp.add(searchButton);
 		fp.add(addButton);
 		
-		flp = new FriendListPanel();
+		/*flp = new FriendListPanel();
 		flp.setBounds(66,79,328,551);
 		flp.setBackground(Color.white);
 		/*
@@ -200,12 +202,19 @@ public class login {
 		scroll.setViewportView(flp);
 		scroll.setBounds(66,79,329,553);
 		*/
+	    FriendListPanel = new JPanel();
+		FriendListPanel.setLayout(new BoxLayout(FriendListPanel,BoxLayout.Y_AXIS));
+		FriendListPanel.setBounds(66,79,328,551);;
+		FriendListPanel.setBackground(Color.white);
 		
-		
+		scroll = new JScrollPane(FriendListPanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll.setBounds(66,79,328,551);
 		
 		mainFrame.getContentPane().add(mp);
 		mainFrame.getContentPane().add(fp);
-		mainFrame.getContentPane().add(flp);
+		mainFrame.getContentPane().add(scroll);
+		//mainFrame.getContentPane().add(FriendListPanel);
+		
 		
 		
 		mainFrame.setVisible(true);
@@ -441,10 +450,11 @@ public class login {
 		}
 		//유저의 친구목록 패널
 		class FriendListPanel extends JPanel{
-			public FriendListPanel() {
-				setLayout(new FlowLayout(FlowLayout.CENTER,0,60));
+			public FriendListPanel() {/*
+				//setLayout(null);
+				setLayout(new BoxLayout(flp,BoxLayout.Y_AXIS));
 				//setLayout(new GridLayout(1,1));
-
+*/
 			}
 		}
 		class UserPanel extends JPanel{
@@ -609,9 +619,43 @@ public class login {
 		}
 	}
 	public void processUserList() {
-		for(int i=0;i<list.size()+1;i++) {
-			flp.add(list.get(0).panel);
+		try {
+			for(int i=0;i<list.size();i++) {
+				System.out.println(i+list.get(i).name);
+			}
+			JPanel panel4 = new JPanel();
+			panel4.setLayout(null);
+			panel4.setPreferredSize(new Dimension(170,90));
+			panel4.setBackground(Color.green);
+			name = new JLabel(list.get(0).name);
+			name.setBounds(77,20,45,33);
+			name.setFont(name.getFont().deriveFont(14.0f));
+			
+			if(list.get(0).gender.equals("남성")) {
+				profileButton = new JButton(new ImageIcon("src/image/남성.jpg"));
+				profileButton.setBounds(19,10,50,50);
+			}
+			else if(list.get(0).gender.equals("여성")) {
+				profileButton = new JButton(new ImageIcon("src/image/여성.jpg"));
+				profileButton.setBounds(19,10,50,50);
+			}
+			
+			chatButton = new JButton();
+			chatButton.setBounds(0,0,313,70);
+			chatButton.setContentAreaFilled(false);
+			chatButton.setFocusPainted(false);
+			
+			musicButton = new JButton();
+			musicButton.setBounds(160,20,140,30);
+			
+			FriendListPanel.add(name); FriendListPanel.add(profileButton);FriendListPanel.add(musicButton);FriendListPanel.add(chatButton);
+			
+			FriendListPanel.repaint();
+		}catch (Exception ex) {
+			JOptionPane.showMessageDialog(null, " 문제가 발생하였습니다.");
+			ex.printStackTrace();
 		}
+		
 		/*
 		for(int i=0;i<list.size();i++) {
 			 //유저꺼
@@ -638,7 +682,7 @@ public class login {
 			musicButton.setBounds(160,20,140,30);
 			//musicButton.setContentAreaFilled(false);
 			//musicButton.setFocusPainted(false);
-			
+			 
 			
 			flp.add(name); flp.add(profileButton);  flp.add(musicButton);flp.add(chatButton); 
 			}
@@ -713,10 +757,9 @@ public class login {
 					}
 					else if (type == ChatMessage.MsgType.FRIEND_LIST) {
 						list.add(new People(message.getName(),message.getGender()));
-						processUserList();
 					}
 					else if(type == ChatMessage.MsgType.END) {
-						
+						processUserList();
 					}
 				}
 			} catch (Exception ex) {

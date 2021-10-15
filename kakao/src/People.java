@@ -22,7 +22,7 @@ public class People {
 		this.name=name;
 		this.gender=gender;
 		
-		panel.setBounds(0,0,315,75);
+		/*panel.setBounds(0,0,315,75);
 		panel.setLayout(null);
 		label_name = new JLabel(name);
 		label_name.setBounds(77,20,45,33);
@@ -45,6 +45,7 @@ public class People {
 		musicButton.setBounds(160,20,140,30);
 		
 		panel.add(label_name); panel.add(profileButton); panel.add(chatButton); panel.add(musicButton);
+		*/
 		}
 	
 }

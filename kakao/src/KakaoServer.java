@@ -10,7 +10,7 @@ public class KakaoServer {
 	// 접속한 클라이언트의 사용자 이름과 출력 스트림을 해쉬 테이블에 보관
 	// 나중에 특정 사용자에게 메시지를 보낼때 사용. 현재 접속해 있는 사용자의 전체 리스트를 구할때도 사용
 
-	ArrayList friend;
+	ArrayList<Integer> friend;
 	
 	//String[] array = null;
 	DB db = new DB();// DB 연결을 위해 객체 생성
@@ -177,7 +177,7 @@ public class KakaoServer {
 		String sql = "select 유저번호 from user where 이메일 like ? and 비밀번호 like ? ;";
 		String sql2 = "select 친구번호 from user,friend where user.유저번호 like ?;";
 		String sql3 = "select 이름,성별 from user where 유저번호 like ? ;";
-		friend= new ArrayList(); 
+		friend= new ArrayList<Integer>(); 
 		
 		int a=0; //a가 0이면 로그인 성공 , a가 1이면 로그인 실패
 		try {
@@ -214,9 +214,10 @@ public class KakaoServer {
 					while (rs.next()) {// 다음 레코드가 있을때
 				         friend.add(rs.getInt(1));  //해당 친구번호를 arraylist에 저장
 					}
+					/*
 					for(int i=0;i<friend.size();i++) {
 						System.out.println(friend.get(i));
-					}
+					}*/
 				} 
 				catch (Exception ex) {
 					System.out.println("S : 서버에서 송신 중 이상 발생");
@@ -229,20 +230,22 @@ public class KakaoServer {
 					rs = pstmt.executeQuery();
 					//유저정보에 대한 정보
 					while (rs.next()) {
-						System.out.println(rs.getString(1)+rs.getString(2));
+						//System.out.println(rs.getString(1));
 						writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(1) , "", "", "", rs.getString(2), "", "", ""));
 					}
 					//친구에 대한 정보
 				    for(int i=0;i<friend.size();i++) {
-				    	pstmt.setInt(1, (int) friend.get(i));
+				    	pstmt.setInt(1, friend.get(i));
 				    	rs = pstmt.executeQuery();
+				    	
 				    	while (rs.next()) {
-				    		System.out.println(rs.getString(1)+rs.getString(2));
+				    		//System.out.println("hi"+rs.getString(1));
+				    		//System.out.println("hi"+rs.getString(2));
 				    		writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(1) , "", "", "", rs.getString(2), "", "", ""));
-				    		if(rs.next()==false)  
-				    		writer.writeObject(new ChatMessage(ChatMessage.MsgType.END,"" , "", "", "", "", "", "", ""));
+				    		  
 				    	}
 				    }
+				    writer.writeObject(new ChatMessage(ChatMessage.MsgType.END,"" , "", "", "", "", "", "", ""));
 				    
 					  
 
