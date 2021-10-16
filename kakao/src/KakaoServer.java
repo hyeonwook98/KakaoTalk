@@ -82,7 +82,7 @@ public class KakaoServer {
 						handleCreation(message.getName(), message.getEmail(), message.getPw(), message.getPhone(),
 								message.getGender(), writer);
 					} 
-					else if (type == ChatMessage.MsgType.LOGIN) {
+					else if (type == ChatMessage.MsgType.LOGIN_TRY) {
 						handleLogin(message.getEmail(), message.getPw(), writer);
 					} 
 					else if (type == ChatMessage.MsgType.LOGOUT) {
@@ -175,7 +175,7 @@ public class KakaoServer {
 	public void handleLogin(String email, String pw, ObjectOutputStream writer) {
 		// TODO Auto-generated method stub
 		String sql = "select 유저번호 from user where 이메일 like ? and 비밀번호 like ? ;";
-		String sql2 = "select 친구번호 from user,friend where user.유저번호 like ?;";
+		String sql2 = "select 친구번호 from user,friend where user.유저번호 like ? and friend.유저번호 like ?;";
 		String sql3 = "select 이름,성별 from user where 유저번호 like ? ;";
 		friend= new ArrayList<Integer>(); 
 		
@@ -189,7 +189,7 @@ public class KakaoServer {
 			if (rs.next()) {// 다음 레코드가 있을때
 				usernumber=rs.getInt(1);
 				System.out.println("카카오톡 유저입니다.");
-				writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN, "", "", "", "", "", "", "", ""));
+				writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN_SUCCESS, "", "", "", "", "", "", "", ""));
 			} else {
 				a=1;
 				System.out.println("없는 유저입니다.");
@@ -210,6 +210,7 @@ public class KakaoServer {
 				try {
 					pstmt = conn.prepareStatement(sql2);
 					pstmt.setInt(1,usernumber);
+					pstmt.setInt(2, usernumber);
 					rs = pstmt.executeQuery();
 					while (rs.next()) {// 다음 레코드가 있을때
 				         friend.add(rs.getInt(1));  //해당 친구번호를 arraylist에 저장
@@ -230,7 +231,7 @@ public class KakaoServer {
 					rs = pstmt.executeQuery();
 					//유저정보에 대한 정보
 					while (rs.next()) {
-						//System.out.println(rs.getString(1));
+						System.out.println(rs.getString(1));
 						writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(1) , "", "", "", rs.getString(2), "", "", ""));
 					}
 					//친구에 대한 정보
@@ -239,13 +240,13 @@ public class KakaoServer {
 				    	rs = pstmt.executeQuery();
 				    	
 				    	while (rs.next()) {
-				    		//System.out.println("hi"+rs.getString(1));
-				    		//System.out.println("hi"+rs.getString(2));
+				    		System.out.println("hi"+rs.getString(1));
+				    		System.out.println("hi"+rs.getString(2));
 				    		writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(1) , "", "", "", rs.getString(2), "", "", ""));
 				    		  
 				    	}
 				    }
-				    writer.writeObject(new ChatMessage(ChatMessage.MsgType.END,"" , "", "", "", "", "", "", ""));
+				    //writer.writeObject(new ChatMessage(ChatMessage.MsgType.END,"" , "", "", "", "", "", "", ""));
 				    
 					  
 

@@ -50,7 +50,9 @@ public class login {
 	ObjectOutputStream writer; // 송신용 스트림
 	JScrollPane scroll;
 	Scrollbar bar;
-	ArrayList<People> list; ArrayList<UserPanel> userpanel;
+	ArrayList<People> list;  ArrayList<JPanel> asdf;
+	JPanel userpanel;
+	int x,y,width,height;
 	int loginConfirm = 0;
 	String user, email, pw,pw2, phone, gender;
 	Socket sock;
@@ -121,7 +123,6 @@ public class login {
 		mainFrame.setLocationRelativeTo(null);
 		
 		list = new ArrayList<People>();
-		userpanel = new ArrayList<UserPanel>();
 
 		friendButton1 = new JButton(new ImageIcon("src/image/친구1.png"));
 		friendButton1.setBounds(14, 40, 40, 40);
@@ -204,18 +205,16 @@ public class login {
 		*/
 	    FriendListPanel = new JPanel();
 		FriendListPanel.setLayout(new BoxLayout(FriendListPanel,BoxLayout.Y_AXIS));
-		FriendListPanel.setBounds(66,79,328,551);;
+		FriendListPanel.setBounds(66,79,326,551);;
 		FriendListPanel.setBackground(Color.white);
 		
-		scroll = new JScrollPane(FriendListPanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		scroll.setBounds(66,79,328,551);
 		
-		mainFrame.getContentPane().add(mp);
-		mainFrame.getContentPane().add(fp);
-		mainFrame.getContentPane().add(scroll);
+		//mainFrame.add(mp);mainFrame.add(fp);
+		//mainFrame.getContentPane().add(mp); mainFrame.getContentPane().add(fp);
+		
 		//mainFrame.getContentPane().add(FriendListPanel);
 		
-		
+		processUserList();
 		
 		mainFrame.setVisible(true);
 	}
@@ -578,7 +577,7 @@ public class login {
 	public void processLogin() {
 		// TODO Auto-generated method stub
 		try {
-			writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN, "", email, pw, "", "", "", "", ""));
+			writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN_TRY, "", email, pw, "", "", "", "", ""));
 			writer.flush();
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog(null, "카카오톡 로그인 중 서버접속에 문제가 발생하였습니다.");
@@ -620,17 +619,29 @@ public class login {
 	}
 	public void processUserList() {
 		try {
-			for(int i=0;i<list.size();i++) {
-				System.out.println(i+list.get(i).name);
-			}
-			JPanel panel4 = new JPanel();
-			panel4.setLayout(null);
-			panel4.setPreferredSize(new Dimension(170,90));
-			panel4.setBackground(Color.green);
+			asdf = new ArrayList<JPanel>();
+			asdf.add(new JPanel());
+			asdf.get(0).setLayout(null);
+			asdf.get(0).setPreferredSize(new Dimension(170,90));
+			asdf.get(0).setBackground(Color.green);
+			System.out.println(list.size());
+			/*
+			userpanel = new JPanel();
+			userpanel.setLayout(null);
+			userpanel.setPreferredSize(new Dimension(170,90));
+			userpanel.setBackground(Color.green);*/
+			//System.out.println("안녕"+(list.get(0)).name);
+			/*
 			name = new JLabel(list.get(0).name);
 			name.setBounds(77,20,45,33);
 			name.setFont(name.getFont().deriveFont(14.0f));
+			asdf.get(0).add(name);
+			*/
 			
+			//asdf.get(0).add(name);
+			
+			
+			/*
 			if(list.get(0).gender.equals("남성")) {
 				profileButton = new JButton(new ImageIcon("src/image/남성.jpg"));
 				profileButton.setBounds(19,10,50,50);
@@ -649,8 +660,19 @@ public class login {
 			musicButton.setBounds(160,20,140,30);
 			
 			FriendListPanel.add(name); FriendListPanel.add(profileButton);FriendListPanel.add(musicButton);FriendListPanel.add(chatButton);
-			
+			*/
+			FriendListPanel.add(asdf.get(0));
 			FriendListPanel.repaint();
+			scroll = new JScrollPane(FriendListPanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			scroll.setBounds(66,79,328,551);
+			
+			
+			//mainFrame.add(mp); mainFrame.add(fp); mainFrame.add(scroll);
+			mainFrame.getContentPane().add(scroll);
+			mainFrame.getContentPane().add(mp); mainFrame.getContentPane().add(fp);
+			//mainFrame.add(scroll);
+			//FriendListPanel.repaint();
+			//scroll.repaint() ;mp.repaint(); fp.repaint(); 
 		}catch (Exception ex) {
 			JOptionPane.showMessageDialog(null, " 문제가 발생하였습니다.");
 			ex.printStackTrace();
@@ -734,10 +756,9 @@ public class login {
 					else if (type == ChatMessage.MsgType.CREATION_FAILURE) {
 						JOptionPane.showMessageDialog(null, "이미 가입된 이메일입니다. 다른 이메일을 입력하세요");
 					} 
-					else if (type == ChatMessage.MsgType.LOGIN) {
+					else if (type == ChatMessage.MsgType.LOGIN_SUCCESS) {
 						mainFrame();
 						frame.dispose();
-						
 					} 
 					else if (type == ChatMessage.MsgType.LOGIN_FAILURE) {
 						JOptionPane.showMessageDialog(null, "Login에 실패하였습니다. 다시 로그인하세요");
@@ -757,9 +778,11 @@ public class login {
 					}
 					else if (type == ChatMessage.MsgType.FRIEND_LIST) {
 						list.add(new People(message.getName(),message.getGender()));
+						System.out.println(list.get(0).name);
+						System.out.println(list.get(0).gender);
 					}
 					else if(type == ChatMessage.MsgType.END) {
-						processUserList();
+						
 					}
 				}
 			} catch (Exception ex) {
