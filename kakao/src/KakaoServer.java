@@ -84,6 +84,7 @@ public class KakaoServer {
 					} 
 					else if (type == ChatMessage.MsgType.LOGIN_TRY) {
 						handleLogin(message.getEmail(), message.getPw(), writer);
+						
 					} 
 					else if (type == ChatMessage.MsgType.LOGOUT) {
 
@@ -189,11 +190,42 @@ public class KakaoServer {
 			if (rs.next()) {// 다음 레코드가 있을때
 				usernumber=rs.getInt(1);
 				System.out.println("카카오톡 유저입니다.");
-				writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN_SUCCESS, "", "", "", "", "", "", "", ""));
+				writer.writeObject(new ChatMessage(ChatMessage.MsgType.NO_ACT, "", "", "", "", "", "", "", ""));
 			} else {
 				a=1;
 				System.out.println("없는 유저입니다.");
 				writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN_FAILURE, "", "", "", "", "", "", "", ""));
+			}
+			if(a==0) {
+				pstmt = conn.prepareStatement(sql2);
+				pstmt.setInt(1,usernumber);
+				pstmt.setInt(2, usernumber);
+				rs = pstmt.executeQuery();
+				while (rs.next()) {// 다음 레코드가 있을때
+			         friend.add(rs.getInt(1));  //해당 친구번호를 arraylist에 저장
+				}
+				pstmt = conn.prepareStatement(sql3);
+				pstmt.setInt(1,usernumber);
+				rs = pstmt.executeQuery();
+				//유저정보에 대한 정보
+				while (rs.next()) {
+					System.out.println(rs.getString(1));
+					writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(1) , "", "", "", rs.getString(2), "", "", ""));
+					//writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN,"" , "", "", "", "", "", "", ""));
+				}
+				//친구에 대한 정보
+			    for(int i=0;i<friend.size();i++) {
+			    	pstmt.setInt(1, friend.get(i));
+			    	rs = pstmt.executeQuery();
+			    	
+			    	while (rs.next()) {
+			    		System.out.println("hi"+rs.getString(1));
+			    		System.out.println("hi"+rs.getString(2));
+			    		writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(1) , "", "", "", rs.getString(2), "", "", ""));
+			    		
+			    	}
+			    }
+			    writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN,"" , "", "", "", "", "", "", ""));
 			}
 
 		} catch (Exception ex) {
@@ -203,7 +235,7 @@ public class KakaoServer {
 		
 		//로그인한 유저의 친구가 누군지 알기
 		
-		if(a==0) {
+		/*if(a==0) {
 			
 			//친구가 1명이상일때
 			//유저와 친구를 맺은 사람이 누구인지 확인하기
@@ -215,10 +247,6 @@ public class KakaoServer {
 					while (rs.next()) {// 다음 레코드가 있을때
 				         friend.add(rs.getInt(1));  //해당 친구번호를 arraylist에 저장
 					}
-					/*
-					for(int i=0;i<friend.size();i++) {
-						System.out.println(friend.get(i));
-					}*/
 				} 
 				catch (Exception ex) {
 					System.out.println("S : 서버에서 송신 중 이상 발생");
@@ -233,6 +261,7 @@ public class KakaoServer {
 					while (rs.next()) {
 						System.out.println(rs.getString(1));
 						writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(1) , "", "", "", rs.getString(2), "", "", ""));
+						writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN,"" , "", "", "", "", "", "", ""));
 					}
 					//친구에 대한 정보
 				    for(int i=0;i<friend.size();i++) {
@@ -243,10 +272,10 @@ public class KakaoServer {
 				    		System.out.println("hi"+rs.getString(1));
 				    		System.out.println("hi"+rs.getString(2));
 				    		writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(1) , "", "", "", rs.getString(2), "", "", ""));
-				    		  
+				    		writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN,"" , "", "", "", "", "", "", ""));
 				    	}
 				    }
-				    //writer.writeObject(new ChatMessage(ChatMessage.MsgType.END,"" , "", "", "", "", "", "", ""));
+				    
 				    
 					  
 
@@ -255,7 +284,7 @@ public class KakaoServer {
 					System.out.println("S : 서버에서 송신 중 이상 발생");
 					ex.printStackTrace();
 				}
-		}
+		}*/
 	}
 	// 비밀번호 재설정시 계정유뮤확인
 	public void handleConfirm(String email, String phone, ObjectOutputStream writer) {
@@ -354,10 +383,6 @@ public class KakaoServer {
 				pstmt.setInt(1, usernumber); // 물음표가 있는 위치 순서로 번호가 지정됨. 물음표의 개수만큼 만들어줘야함.(개수 안맞추면 오류가 난다!)
 				pstmt.setInt(2, friendnumber);
 
-				// WORD는 String으로 받은 String의 cname, cphone, ctype, cnumber를 전달해서 세팅해서 실행하도록 해줌.
-				// cname, cphone, ctype, cnumber은 해당되는 부분의 JTextField에서 적힌 정보를 받아와야함!(텍스트필드
-				// 변수.getText(););
-
 				int result = pstmt.executeUpdate(); // 쿼리 전송의 결과 객체를 반환하기위함. 0이면 오류, 1이면 제대로 실행된 것.
 				// executeUpdate는 insert, update, delete 문에서 사용
 				// executeQuery는 select문에서 사용.
@@ -371,6 +396,7 @@ public class KakaoServer {
 			}
 			}
 		}
+		
 	}
 
 	// 유저가 대화 상대방에게 보내는 메시지. 그 상대 혹은 "원하는 친구전체"에게 보내주어야 함
