@@ -383,6 +383,10 @@ public class KakaoServer {
 				pstmt.setInt(1, usernumber); // 물음표가 있는 위치 순서로 번호가 지정됨. 물음표의 개수만큼 만들어줘야함.(개수 안맞추면 오류가 난다!)
 				pstmt.setInt(2, friendnumber);
 
+				// WORD는 String으로 받은 String의 cname, cphone, ctype, cnumber를 전달해서 세팅해서 실행하도록 해줌.
+				// cname, cphone, ctype, cnumber은 해당되는 부분의 JTextField에서 적힌 정보를 받아와야함!(텍스트필드
+				// 변수.getText(););
+
 				int result = pstmt.executeUpdate(); // 쿼리 전송의 결과 객체를 반환하기위함. 0이면 오류, 1이면 제대로 실행된 것.
 				// executeUpdate는 insert, update, delete 문에서 사용
 				// executeQuery는 select문에서 사용.
@@ -396,7 +400,6 @@ public class KakaoServer {
 			}
 			}
 		}
-		
 	}
 
 	// 유저가 대화 상대방에게 보내는 메시지. 그 상대 혹은 "원하는 친구전체"에게 보내주어야 함
