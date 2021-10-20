@@ -170,8 +170,6 @@ public class KakaoServer {
 
 	}
 
-
-
 	// 로그인 정보 받기
 	public void handleLogin(String email, String pw, ObjectOutputStream writer) {
 		// TODO Auto-generated method stub
@@ -233,58 +231,6 @@ public class KakaoServer {
 			ex.printStackTrace();
 		}
 		
-		//로그인한 유저의 친구가 누군지 알기
-		
-		/*if(a==0) {
-			
-			//친구가 1명이상일때
-			//유저와 친구를 맺은 사람이 누구인지 확인하기
-				try {
-					pstmt = conn.prepareStatement(sql2);
-					pstmt.setInt(1,usernumber);
-					pstmt.setInt(2, usernumber);
-					rs = pstmt.executeQuery();
-					while (rs.next()) {// 다음 레코드가 있을때
-				         friend.add(rs.getInt(1));  //해당 친구번호를 arraylist에 저장
-					}
-				} 
-				catch (Exception ex) {
-					System.out.println("S : 서버에서 송신 중 이상 발생");
-					ex.printStackTrace();
-				}
-				//해당 친구의 이름과 성별을 유저에게 알려줘야함
-				try {
-					pstmt = conn.prepareStatement(sql3);
-					pstmt.setInt(1,usernumber);
-					rs = pstmt.executeQuery();
-					//유저정보에 대한 정보
-					while (rs.next()) {
-						System.out.println(rs.getString(1));
-						writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(1) , "", "", "", rs.getString(2), "", "", ""));
-						writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN,"" , "", "", "", "", "", "", ""));
-					}
-					//친구에 대한 정보
-				    for(int i=0;i<friend.size();i++) {
-				    	pstmt.setInt(1, friend.get(i));
-				    	rs = pstmt.executeQuery();
-				    	
-				    	while (rs.next()) {
-				    		System.out.println("hi"+rs.getString(1));
-				    		System.out.println("hi"+rs.getString(2));
-				    		writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(1) , "", "", "", rs.getString(2), "", "", ""));
-				    		writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN,"" , "", "", "", "", "", "", ""));
-				    	}
-				    }
-				    
-				    
-					  
-
-				    				} 
-				catch (Exception ex) {
-					System.out.println("S : 서버에서 송신 중 이상 발생");
-					ex.printStackTrace();
-				}
-		}*/
 	}
 	// 비밀번호 재설정시 계정유뮤확인
 	public void handleConfirm(String email, String phone, ObjectOutputStream writer) {
@@ -335,7 +281,9 @@ public class KakaoServer {
 		String sql = "insert into friend(유저번호,친구번호)values(?,?);";
 		String sql2 = "select 유저번호,이름,전화번호 from user where 이름 like ? and 전화번호 like ?;";
 		String sql3 = "select 유저번호,친구번호 from friend where 유저번호 like ? and 친구번호 like ?;";
+		String sql4 = "select 이름,성별 from user where 유저번호 like ? ;";
 		try {
+			//친구추가하고자 하는 정보가 카카오 유저인지 먼저 판단하기
 			pstmt = conn.prepareStatement(sql2); // sql문을 conn을 이용해 전달, sql문을 DB에 전달한다고 생각하면 될듯! try catch문이 필요한 문장
 			pstmt.setString(1, name);
 			pstmt.setString(2, phone);
@@ -367,15 +315,14 @@ public class KakaoServer {
 								new ChatMessage(ChatMessage.MsgType.FRIEND_EXIST, "", "", "", "", "", "", "", ""));
 				}
 				else {
-					writer.writeObject(
-							new ChatMessage(ChatMessage.MsgType.ADD, "", "", "", "", "", "", "", ""));
+					//writer.writeObject(new ChatMessage(ChatMessage.MsgType.ADD, "", "", "", "", "", "", "", ""));
 				}
 
 			} catch (Exception ex) {
 				System.out.println("S : 서버에서 송신 중 이상 발생");
 				ex.printStackTrace();
 			}
-			if(b==0) {
+			if(b==0) { //실질적인 친구추가하는 부분
 				
 			try {
 				
@@ -383,15 +330,20 @@ public class KakaoServer {
 				pstmt.setInt(1, usernumber); // 물음표가 있는 위치 순서로 번호가 지정됨. 물음표의 개수만큼 만들어줘야함.(개수 안맞추면 오류가 난다!)
 				pstmt.setInt(2, friendnumber);
 
-				// WORD는 String으로 받은 String의 cname, cphone, ctype, cnumber를 전달해서 세팅해서 실행하도록 해줌.
-				// cname, cphone, ctype, cnumber은 해당되는 부분의 JTextField에서 적힌 정보를 받아와야함!(텍스트필드
-				// 변수.getText(););
-
 				int result = pstmt.executeUpdate(); // 쿼리 전송의 결과 객체를 반환하기위함. 0이면 오류, 1이면 제대로 실행된 것.
 				// executeUpdate는 insert, update, delete 문에서 사용
 				// executeQuery는 select문에서 사용.
 				System.out.println("result = " + result);
+				
+				pstmt = conn.prepareStatement(sql4);
+				pstmt.setInt(1,friendnumber);
+				
+				rs = pstmt.executeQuery();
+				while(rs.next()) {
+					writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(1) , "", "", "", rs.getString(2), "", "", ""));
+				}
 
+				writer.writeObject(new ChatMessage(ChatMessage.MsgType.ADD, "", "", "", "", "", "", "", ""));
 				pstmt.close(); // 종료
 				conn.close(); // 종료
 			} catch (Exception ex) {
@@ -400,6 +352,7 @@ public class KakaoServer {
 			}
 			}
 		}
+		
 	}
 
 	// 유저가 대화 상대방에게 보내는 메시지. 그 상대 혹은 "원하는 친구전체"에게 보내주어야 함
