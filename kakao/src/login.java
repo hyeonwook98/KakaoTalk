@@ -709,12 +709,9 @@ public class login {
 			FriendListPanel.add(userpanel.get(i+1));
 			
 			
-			//FriendListPanel.add(name); FriendListPanel.add(profileButton);FriendListPanel.add(musicButton);FriendListPanel.add(chatButton);
-			
-			
 			FriendListPanel.repaint();
 			scroll = new JScrollPane(FriendListPanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-			scroll.setBounds(66,79,328,551);
+			scroll.setBounds(66,79,328,553);
 			//scroll.setLayout(null);
 			
 			
@@ -729,42 +726,6 @@ public class login {
 			JOptionPane.showMessageDialog(null, "친구 리스트 패널 생성중 문제 발생");
 			ex.printStackTrace();
 		}
-		
-		/*
-	
-			flp.add(name); flp.add(profileButton);  flp.add(musicButton);flp.add(chatButton); 
-			}
-			else {
-				//각 버튼들 +55씩해주면 위치맞음
-				//각 버튼들 +55씩해주면 위치맞음
-				//각 버튼들 +55씩해주면 위치맞음
-				//각 버튼들 +55씩해주면 위치맞음
-				name2 = new JLabel("최승표");
-				name2.setBounds(77,112,45,33);
-				name2.setFont(name2.getFont().deriveFont(14.0f));
-				
-				profileButton2 = new JButton(new ImageIcon("src/image/여성.jpg"));
-				profileButton2.setBounds(19,108,40,40);
-				
-				chatButton3 = new JButton();
-				chatButton3.setBounds(0,100,313,55);
-				chatButton3.setContentAreaFilled(false);
-				chatButton3.setFocusPainted(false);
-				
-				musicButton2 = new JButton();
-				musicButton2.setBounds(160,115,140,25);
-				
-				fcount = new JLabel("친구");
-				fcount.setBounds(18,77,40,20);
-				fcount.setFont(fcount.getFont().deriveFont(12.0f));
-				
-				flp.add(fcount);
-				
-				flp.add(profileButton2); flp.add(chatButton3); flp.add(musicButton2); flp.add(name2);
-		
-			}
-		}
-		     */  
 	}
 
 	/////////////////////////////// 유저가 서버로 부터 받는 메시지///////////////////////////////
