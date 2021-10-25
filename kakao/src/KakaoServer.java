@@ -208,8 +208,8 @@ public class KakaoServer {
 				//유저정보에 대한 정보
 				while (rs.next()) {
 					System.out.println(rs.getString(1));
-					writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(1) , "", "", "", rs.getString(2), "", "", ""));
-					//writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN,"" , "", "", "", "", "", "", ""));
+					writer.writeObject(new ChatMessage(ChatMessage.MsgType.USER_INFO,rs.getString(1) , "", "", "", rs.getString(2), "", "", ""));
+	
 				}
 				//친구에 대한 정보
 			    for(int i=0;i<friend.size();i++) {
