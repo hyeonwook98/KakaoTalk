@@ -32,24 +32,24 @@ public class login {
 
 	JFrame frame, mainFrame, creationFrame, pwChangeFrame1 , pwChangeFrame2 , friendAddFrame;
 	LoginPanel lp;
-	FriendPanel fp; FriendListPanel flp; UserPanel up;
+	FriendPanel fp; FriendListPanel flp; UserPanel up; ChatPanel chatPanel;
 	MainPanel mp;
 	CreationPanel cp;
-	JPanel FriendListPanel,userPanel,friendCountPanel,nullPanel;
+	JPanel FriendListPanel,ChatListPanel,userPanel,friendCountPanel,nullPanel;
 	pwChangePanel1 cp1; pwChangePanel2 cp2; friendAddPanel ap;
 	JTextField id, cName, cEmail, cPw, cPhone, pwEmail, pwPhone, aName , aPhone;
 	JPasswordField password, changePw, changePwRe;
-	JLabel friend,name2,friendCount ;
+	JLabel friend,chat,name2,friendCount ;
 	ImageIcon loginBackground;	ImageIcon createBackground;	ImageIcon changeBackground1; ImageIcon changeBackground2; ImageIcon addBackground;
 	JButton loginButton;	JButton createButton;	JButton pwChangeButton; 	JButton friendButton1; 	JButton friendButton2; 	JButton ChatButton1; 	JButton ChatButton2;
 	JButton PlusButton1;	JButton PlusButton2; 	JButton emoticonButton1; 	JButton emoticonButton2; 	JButton noticeButton1; 	JButton noticeButton2;
-	JButton settingButton1;	JButton settingButton2;	JButton searchButton;	JButton addButton; 	JButton confirmButton; JButton nextButton; JButton successButton; JButton fAddButton;
+	JButton settingButton1;	JButton settingButton2;	JButton searchButton1; JButton searchButton2;	JButton addButton; 	JButton confirmButton; JButton nextButton; JButton successButton; JButton fAddButton;
 	JButton profileButton2;JButton musicButton2;JButton chatButton3;
 	JRadioButton men, women;
 	ObjectInputStream reader; // 수신용 스트림
 	ObjectOutputStream writer; // 송신용 스트림
 	Thread readerThread;
-	JScrollPane scroll;
+	JScrollPane scroll1,scroll2;
 	Scrollbar bar;
 	ArrayList<People> list;  
 	JPanel userpanel; JButton profileButton ; 
@@ -130,6 +130,16 @@ public class login {
 		mainFrame.getContentPane().setLayout(null);
 		mainFrame.setLocationRelativeTo(null);
 
+		///////////////////////////////////////////////////////메인패널(컨트롤 패널)//////////////
+		mp = new MainPanel();
+		mp.setBounds(0, 0, 66, 630);
+
+		friendButton2 = new JButton(new ImageIcon("src/image/친구2.png"));
+		friendButton2.setBounds(14, 40, 40, 40);
+		// friendButton1.setBorderPainted(false);
+		friendButton2.setContentAreaFilled(false);
+		friendButton2.setFocusPainted(false);
+		
 		friendButton1 = new JButton(new ImageIcon("src/image/친구1.png"));
 		friendButton1.setBounds(14, 40, 40, 40);
 		// friendButton1.setBorderPainted(false);
@@ -141,6 +151,12 @@ public class login {
 		// ChatButton1.setBorderPainted(false);
 		ChatButton1.setContentAreaFilled(false);
 		ChatButton1.setFocusPainted(false);
+		
+		ChatButton2 = new JButton(new ImageIcon("src/image/채팅2.png"));
+		ChatButton2.setBounds(14, 100, 40, 40);
+		// ChatButton1.setBorderPainted(false);
+		ChatButton2.setContentAreaFilled(false);
+		ChatButton2.setFocusPainted(false);
 
 		PlusButton1 = new JButton(new ImageIcon("src/image/더보기1.png"));
 		PlusButton1.setBounds(14, 160, 40, 40);
@@ -165,54 +181,80 @@ public class login {
 		// settingButton1.setBorderPainted(false);
 		settingButton1.setContentAreaFilled(false);
 		settingButton1.setFocusPainted(false);
-
-		searchButton = new JButton(new ImageIcon("src/image/통합검색.png"));
-		searchButton.setBounds(240, 45, 25, 25);
-		searchButton.setBorderPainted(false);
-		searchButton.setContentAreaFilled(false);
-		searchButton.setFocusPainted(false);
-
+		
+		mp.add(ChatButton1);
+		mp.add(PlusButton1);
+		mp.add(emoticonButton1);
+		mp.add(noticeButton1);
+		mp.add(settingButton1);
+		mp.add(friendButton2);
+		mp.add(friendButton1); friendButton1.setVisible(false); friendButton1.setEnabled(false);
+		mp.add(ChatButton2); ChatButton2.setVisible(false); ChatButton2.setEnabled(false);
+		
+		/////////////////////////////////////////////////////친구패널///////////////
+		fp = new FriendPanel();
+		fp.setBounds(66, 0, 328, 79);
+		fp.setBackground(Color.white);
+		
+		friend = new JLabel("친구");
+		friend.setBounds(18, 20, 70, 80);
+		friend.setFont(friend.getFont().deriveFont(20.0f)); // 친구 글꼴 크기 조정
+		
+		searchButton1 = new JButton(new ImageIcon("src/image/통합검색.png"));
+		searchButton1.setBounds(240, 45, 25, 25);
+		searchButton1.setBorderPainted(false);
+		searchButton1.setContentAreaFilled(false);
+		searchButton1.setFocusPainted(false);
+		
 		addButton = new JButton(new ImageIcon("src/image/친구추가.png"));
 		addButton.setBounds(280, 46, 30, 30);
 		addButton.setBorderPainted(false);
 		addButton.setContentAreaFilled(false);
 		addButton.setFocusPainted(false);
 		
-		ButtonListener b1 = new ButtonListener();
-		addButton.addActionListener(b1);
-
-		friend = new JLabel("친구");
-		friend.setBounds(18, 20, 70, 80);
-		friend.setFont(friend.getFont().deriveFont(20.0f)); // 친구 글꼴 크기 조정
-
-		mp = new MainPanel();
-		mp.setBounds(0, 0, 66, 630);
-		mp.add(friendButton1);
-		mp.add(ChatButton1);
-		mp.add(PlusButton1);
-		mp.add(emoticonButton1);
-		mp.add(noticeButton1);
-		mp.add(settingButton1);
-
-		fp = new FriendPanel();
-		fp.setBounds(66, 0, 328, 79);
-		fp.setBackground(Color.white);
 		fp.add(friend);
-		fp.add(searchButton);
+		fp.add(searchButton1);
 		fp.add(addButton);
 		
+		
+		///////////////////////////////////친구목록패널////////////
 	    FriendListPanel = new JPanel();
 		FriendListPanel.setLayout(new BoxLayout(FriendListPanel,BoxLayout.Y_AXIS));
 		FriendListPanel.setBounds(66,79,326,551);;
 		FriendListPanel.setBackground(Color.white);
 		
+
+		/////////////////////////////////////////////////////채팅패널
+		chatPanel = new ChatPanel(); 
+		chatPanel.setBounds(66, 0, 328, 79);
+		chatPanel.setBackground(Color.white);
 		
-		//mainFrame.add(mp);mainFrame.add(fp);
-		//mainFrame.getContentPane().add(mp); mainFrame.getContentPane().add(fp);
+		chat = new JLabel("채팅");
+		chat.setBounds(18, 20, 70, 80);
+		chat.setFont(friend.getFont().deriveFont(20.0f));//채팅 글꼴 크기 조정
+
+		searchButton2 = new JButton(new ImageIcon("src/image/통합검색.png"));
+		searchButton2.setBounds(240, 45, 25, 25);
+		searchButton2.setBorderPainted(false);
+		searchButton2.setContentAreaFilled(false);
+		searchButton2.setFocusPainted(false);
+
+		chatPanel.add(chat);
+		chatPanel.add(searchButton2);
 		
-		//mainFrame.getContentPane().add(FriendListPanel);
+		////////////////////////////////////////////////채팅목록패널
+		ChatListPanel = new JPanel();
+		ChatListPanel.setLayout(new BoxLayout(ChatListPanel,BoxLayout.Y_AXIS));
+		ChatListPanel.setBounds(66,79,326,551);;
+		ChatListPanel.setBackground(Color.white);
+		
+		ButtonListener b1 = new ButtonListener();
+		addButton.addActionListener(b1);
+		ChatButton1.addActionListener(b1);
+		friendButton1.addActionListener(b1);
 		
 		processUserList();
+		//processChatList();
 		
 		mainFrame.setVisible(true);
 	}
@@ -404,7 +446,12 @@ public class login {
 	class FriendPanel extends JPanel {
 		public FriendPanel() {
 			setLayout(null);
-
+		}
+	}
+	//채팅 패널
+	class ChatPanel extends JPanel{
+		public ChatPanel() {
+			setLayout(null);
 		}
 	}
 
@@ -472,6 +519,7 @@ public class login {
 				g.drawImage(addBackground.getImage(), 0, 0, 320, 438, null);
 			}
 		}
+		
 
 	private void setUpNetworking() {
 		try {
@@ -501,6 +549,53 @@ public class login {
 			}
 			if (e.getSource() == addButton) {
 				friendAddFrame();
+			}
+			if(e.getSource() == friendButton2) {
+				
+			}
+            if(e.getSource() == ChatButton1) {
+            	//패널설정
+            	fp.setVisible(false);
+            	fp.setEnabled(false);
+            	chatPanel.setVisible(true);
+            	chatPanel.setEnabled(true);
+            	
+            	processChatList();
+            	
+            	//버튼설정
+            	ChatButton1.setVisible(false);
+            	ChatButton1.setEnabled(false);
+            	ChatButton2.setVisible(true);
+            	ChatButton2.setEnabled(true);
+            	friendButton2.setVisible(false);
+            	friendButton2.setEnabled(false);
+            	friendButton1.setVisible(true);
+            	friendButton1.setEnabled(true);
+            	//mainFrame.repaint();
+            	mp.repaint();
+			}
+            if(e.getSource() == friendButton1) {
+            	//패널설정
+                fp.setVisible(true);
+                fp.setEnabled(true);
+                chatPanel.setVisible(false);
+            	chatPanel.setEnabled(false);
+            	
+            	scroll1.setVisible(true);
+            	scroll1.setEnabled(true);
+            	scroll2.setVisible(false);
+            	scroll2.setEnabled(false);
+            	
+            	//버튼설정
+            	friendButton2.setVisible(true);
+            	friendButton2.setEnabled(true);
+            	friendButton1.setVisible(false);
+            	friendButton1.setEnabled(false);
+            	ChatButton1.setVisible(true);
+            	ChatButton1.setEnabled(true);
+            	ChatButton2.setVisible(false);
+            	ChatButton2.setEnabled(false);
+            	mp.repaint();
 			}
 		}
 	}
@@ -660,9 +755,7 @@ public class login {
 			friendCountPanel.add(friendCount);
 			FriendListPanel.add(friendCountPanel);
 			
-			/////////////////////////////////////////친구패널 //여기문제 //hyeonwook98@naver.com로 로그인하면 문제발생함
-			
-			
+			/////////////////////////////////////////친구패널 //
 			for(int i=0;i<list.size();i++) {
 				FriendListPanel.add(list.get(i));
 			}
@@ -675,22 +768,29 @@ public class login {
 			FriendListPanel.add(nullPanel);
 			
 			FriendListPanel.repaint();
-			scroll = new JScrollPane(FriendListPanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-			scroll.setBounds(66,79,328,553);
+			scroll1 = new JScrollPane(FriendListPanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+			scroll1.setBounds(66,79,328,553);
 			//scroll.setLayout(null);
-			
-			
-			//mainFrame.add(mp); mainFrame.add(fp); mainFrame.add(scroll);
-			mainFrame.getContentPane().add(scroll);
+
+			mainFrame.getContentPane().add(scroll1);
 			mainFrame.getContentPane().add(mp); mainFrame.getContentPane().add(fp);
-			//mainFrame.add(scroll);
-			//FriendListPanel.repaint();
-			//scroll.repaint() ;mp.repaint(); fp.repaint(); 
+			
+			
 			
 		}catch (Exception ex) {
 			JOptionPane.showMessageDialog(null, "친구 리스트 패널 생성중 문제 발생");
 			ex.printStackTrace();
 		}
+	}
+	public void processChatList() { 
+		scroll1.setVisible(false);
+    	scroll1.setEnabled(false);
+    	
+		scroll2 = new JScrollPane(ChatListPanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		scroll2.setBounds(66,79,328,553);
+		
+		mainFrame.getContentPane().add(scroll2);  scroll2.setVisible(true); scroll2.setEnabled(true);
+		mainFrame.getContentPane().add(chatPanel); chatPanel.setVisible(true); chatPanel.setEnabled(true);
 	}
 
 	/////////////////////////////// 유저가 서버로 부터 받는 메시지///////////////////////////////
