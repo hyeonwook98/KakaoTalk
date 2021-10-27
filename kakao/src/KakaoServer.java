@@ -175,7 +175,7 @@ public class KakaoServer {
 		// TODO Auto-generated method stub
 		String sql = "select 유저번호 from user where 이메일 like ? and 비밀번호 like ? ;";
 		String sql2 = "select 친구번호 from user,friend where user.유저번호 like ? and friend.유저번호 like ?;";
-		String sql3 = "select 이름,성별 from user where 유저번호 like ? ;";
+		String sql3 = "select 이름,성별,전화번호 from user where 유저번호 like ? ;";
 		friend= new ArrayList<Integer>(); 
 		
 		int a=0; //a가 0이면 로그인 성공 , a가 1이면 로그인 실패
@@ -207,8 +207,8 @@ public class KakaoServer {
 				rs = pstmt.executeQuery();
 				//유저정보에 대한 정보
 				while (rs.next()) {
-					System.out.println(rs.getString(1));
-					writer.writeObject(new ChatMessage(ChatMessage.MsgType.USER_INFO,rs.getString(1) , "", "", "", rs.getString(2), "", "", ""));
+					//System.out.println(rs.getString(1));
+					writer.writeObject(new ChatMessage(ChatMessage.MsgType.USER_INFO,rs.getString(1) , "", "",rs.getString(3) , rs.getString(2), "", "", ""));
 	
 				}
 				//친구에 대한 정보
@@ -217,9 +217,7 @@ public class KakaoServer {
 			    	rs = pstmt.executeQuery();
 			    	
 			    	while (rs.next()) {
-			    		System.out.println("hi"+rs.getString(1));
-			    		System.out.println("hi"+rs.getString(2));
-			    		writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(1) , "", "", "", rs.getString(2), "", "", ""));
+			    		writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(1) , "", "", rs.getString(3), rs.getString(2), "", "", ""));
 			    		
 			    	}
 			    }

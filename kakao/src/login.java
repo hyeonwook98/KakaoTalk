@@ -30,17 +30,18 @@ import javax.swing.JTextField;
 
 public class login {
 
-	JFrame frame, mainFrame, creationFrame, pwChangeFrame1 , pwChangeFrame2 , friendAddFrame;
+	JFrame frame, mainFrame, creationFrame, pwChangeFrame1 , pwChangeFrame2 , friendAddFrame, chatFrame;
 	LoginPanel lp;
 	FriendPanel fp; FriendListPanel flp; UserPanel up; ChatPanel chatPanel;
-	MainPanel mp;
+	MainPanel mp; ChatPanel1 chatPanel1; ChatPanel2 chatPanel2; ChatPanel3 chatPanel3;
 	CreationPanel cp;
-	JPanel FriendListPanel,ChatListPanel,userPanel,friendCountPanel,nullPanel;
+	JPanel FriendListPanel,ChatListPanel,userPanel,friendCountPanel,nullPanel ;
 	pwChangePanel1 cp1; pwChangePanel2 cp2; friendAddPanel ap;
 	JTextField id, cName, cEmail, cPw, cPhone, pwEmail, pwPhone, aName , aPhone;
 	JPasswordField password, changePw, changePwRe;
 	JLabel friend,chat,name2,friendCount ;
 	ImageIcon loginBackground;	ImageIcon createBackground;	ImageIcon changeBackground1; ImageIcon changeBackground2; ImageIcon addBackground;
+	ImageIcon chatPanel1Background;  ImageIcon chatPanel2Background; ImageIcon chatPanel3Background;
 	JButton loginButton;	JButton createButton;	JButton pwChangeButton; 	JButton friendButton1; 	JButton friendButton2; 	JButton ChatButton1; 	JButton ChatButton2;
 	JButton PlusButton1;	JButton PlusButton2; 	JButton emoticonButton1; 	JButton emoticonButton2; 	JButton noticeButton1; 	JButton noticeButton2;
 	JButton settingButton1;	JButton settingButton2;	JButton searchButton1; JButton searchButton2;	JButton addButton; 	JButton confirmButton; JButton nextButton; JButton successButton; JButton fAddButton;
@@ -51,14 +52,15 @@ public class login {
 	Thread readerThread;
 	JScrollPane scroll1,scroll2;
 	Scrollbar bar;
-	ArrayList<People> list;  
+	ArrayList<Friend> list;  
 	JPanel userpanel; JButton profileButton ; 
 	JButton musicButton; JButton chatButton; JLabel name;
 	int x,y,width,height;
-	int loginConfirm = 0;
+	int loginConfirm = 0; 
 	//int i=0;
-	People as;
-	String loginUser,userGender;
+	Friend as;
+	String loginUser,userGender,userPhone; //로그인한 유저의 정보 저장
+	int listIndex; //채팅하고자 하는 친구 버튼 눌렀을때 list인덱스 접근
 	String user, email, pw,pw2, phone, gender;
 	Socket sock;
 	// 배경
@@ -67,6 +69,9 @@ public class login {
 	String C1_BACK = "src/image/비밀번호 재설정 화면1.png";
 	String C2_BACK = "src/image/비밀번호 재설정 화면2.png";
 	String A_BACK = "src/image/친구추가 화면.png";
+	String CP1_BACK = "src/image/채팅창 패널1 연한하늘색.png";
+	String CP2_BACK = "src/image/채팅창 패널2 연한하늘색.png";
+	String CP3_BACK = "src/image/채팅창 패널3.png";
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
@@ -89,7 +94,7 @@ public class login {
 		readerThread = new Thread(new IncomingReader());
 		readerThread.start();
 		
-		list = new ArrayList<People>();
+		list = new ArrayList<Friend>();
 		id = new JTextField();
 		password = new JPasswordField();
 		id.setBounds(58, 220, 240, 39);
@@ -248,6 +253,7 @@ public class login {
 		ChatListPanel.setBounds(66,79,326,551);;
 		ChatListPanel.setBackground(Color.white);
 		
+		///////////////////////////////////////////////
 		ButtonListener b1 = new ButtonListener();
 		addButton.addActionListener(b1);
 		ChatButton1.addActionListener(b1);
@@ -256,6 +262,7 @@ public class login {
 		processUserList();
 		//processChatList();
 		
+		mainFrame.getContentPane().add(mp);
 		mainFrame.setVisible(true);
 	}
 
@@ -419,6 +426,31 @@ public class login {
         
         friendAddFrame.setVisible(true);
 	}
+	public void chatFrame(int usernumber) {
+		chatFrame=new JFrame();
+		// 클라이언드 프레임 창 조정
+		chatFrame.setBounds(1150, 210, 368, 634);
+		//chatFrame.setPreferredSize(new Dimension(368,612));
+		//creationFrame.setDefaultCloseOperation(creationFrame.EXIT_ON_CLOSE);
+		chatFrame.getContentPane().setLayout(null);
+		
+		chatPanel1 = new ChatPanel1();
+		chatPanel1.setBounds(0,0,353,76);
+		//chatPanel1.setPreferredSize(new Dimension(353,76));
+		
+		chatPanel2 = new ChatPanel2();
+		chatPanel2.setBounds(0,72,352,450);
+		
+		chatPanel3 = new ChatPanel3();
+		chatPanel3.setBounds(0,493,352,102);
+		
+		chatFrame.getContentPane().add(chatPanel1);
+		chatFrame.getContentPane().add(chatPanel3);
+		chatFrame.getContentPane().add(chatPanel2);
+		
+		
+		chatFrame.setVisible(true);
+	}
 
 	///////////////////////////////////////// 패널////////////////////////////////////////////////
 
@@ -519,7 +551,36 @@ public class login {
 				g.drawImage(addBackground.getImage(), 0, 0, 320, 438, null);
 			}
 		}
-		
+		//채팅방패널 1
+		class ChatPanel1 extends JPanel{
+			public ChatPanel1() {
+				setLayout(null);
+				chatPanel1Background = new ImageIcon(CP1_BACK);
+			}
+			public void paintComponent(Graphics g) {
+				g.drawImage(chatPanel1Background.getImage(), 0, 0, 353, 73, null);
+			}
+		}
+		//채팅방패널 2
+		class ChatPanel2 extends JPanel{
+			public ChatPanel2() {
+				setLayout(null);
+				chatPanel2Background = new ImageIcon(CP2_BACK);
+			}
+			public void paintComponent(Graphics g) {
+				g.drawImage(chatPanel2Background.getImage(), 0, 0, 352, 420, null);
+			}
+		}
+		//채팅방패널 3
+		class ChatPanel3 extends JPanel{
+			public ChatPanel3() {
+				setLayout(null);
+				chatPanel3Background = new ImageIcon(CP3_BACK);
+			}
+			public void paintComponent(Graphics g) {
+				g.drawImage(chatPanel3Background.getImage(), 0, 0, 352, 102, null);
+			}
+		}
 
 	private void setUpNetworking() {
 		try {
@@ -534,7 +595,7 @@ public class login {
 		}
 	} // close setUpNetworking
 
-	// 로그인화면 버튼 리스너
+	// 버튼 리스너
 	class ButtonListener implements ActionListener {
 
 		@Override
@@ -597,6 +658,12 @@ public class login {
             	ChatButton2.setEnabled(false);
             	mp.repaint();
 			}
+            for(int i=0;i<list.size();i++) {
+            if(e.getSource() == list.get(i).chatButton.get(i)) {
+            	listIndex=i; //해당 list인덱스를 저장
+            	chatFrame(listIndex); //프레임에 해당 list인덱스 번호를 넘겨줌
+            }
+            }
 		}
 	}
 
@@ -739,7 +806,7 @@ public class login {
 			musicButton=new JButton() ;
 			musicButton.setBounds(160,20,140,30);
 			
-			userPanel.add(name);userPanel.add(chatButton);userPanel.add(musicButton);userPanel.add(profileButton);
+			userPanel.add(name);userPanel.add(musicButton);userPanel.add(profileButton);userPanel.add(chatButton);
 			FriendListPanel.add(userPanel);
 			
 			/////////////////////////////////////////친구카운트패널
@@ -757,6 +824,8 @@ public class login {
 			
 			/////////////////////////////////////////친구패널 //
 			for(int i=0;i<list.size();i++) {
+				ButtonListener b1 = new ButtonListener();
+				list.get(i).chatButton.get(i).addActionListener(b1);
 				FriendListPanel.add(list.get(i));
 			}
 			//////////////////////////////////////////null패널
@@ -773,7 +842,7 @@ public class login {
 			//scroll.setLayout(null);
 
 			mainFrame.getContentPane().add(scroll1);
-			mainFrame.getContentPane().add(mp); mainFrame.getContentPane().add(fp);
+			 mainFrame.getContentPane().add(fp);
 			
 			
 			
@@ -836,10 +905,10 @@ public class login {
 						JOptionPane.showMessageDialog(null, "이미 존재하는 친구입니다.");
 					}
 					else if (type == ChatMessage.MsgType.FRIEND_LIST) {
-						list.add(new People(message.getName(),message.getGender()));
+						list.add(new Friend(message.getName(),message.getGender(),message.getPhone()));
 					}
 					else if (type == ChatMessage.MsgType.USER_INFO) {
-						loginUser=message.getName(); userGender=message.getGender();
+						loginUser=message.getName(); userGender=message.getGender(); userPhone=message.getPhone();
 					}
 					
 				}
