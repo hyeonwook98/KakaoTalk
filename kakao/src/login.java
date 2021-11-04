@@ -26,7 +26,9 @@ import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.ScrollPaneConstants;
 
 public class login {
 
@@ -45,13 +47,13 @@ public class login {
 	JButton loginButton;	JButton createButton;	JButton pwChangeButton; 	JButton friendButton1; 	JButton friendButton2; 	JButton ChatButton1; 	JButton ChatButton2;
 	JButton PlusButton1;	JButton PlusButton2; 	JButton emoticonButton1; 	JButton emoticonButton2; 	JButton noticeButton1; 	JButton noticeButton2;
 	JButton settingButton1;	JButton settingButton2;	JButton searchButton1; JButton searchButton2;	JButton addButton; 	JButton confirmButton; JButton nextButton; JButton successButton; JButton fAddButton;
-	JButton profileButton2;JButton musicButton2;JButton chatButton3;
+	JButton profileButton2;JButton musicButton2;JButton chatButton3;  JButton chatProfile; JLabel chatLabel;
 	JRadioButton men, women;
 	ObjectInputStream reader; // 수신용 스트림
 	ObjectOutputStream writer; // 송신용 스트림
 	Thread readerThread;
-	JScrollPane scroll1,scroll2;
-	Scrollbar bar;
+	JScrollPane scroll1,scroll2,chat_scroll;
+	JTextArea outgoing;
 	ArrayList<Friend> list;  
 	JPanel userpanel; JButton profileButton ; 
 	JButton musicButton; JButton chatButton; JLabel name;
@@ -426,7 +428,7 @@ public class login {
         
         friendAddFrame.setVisible(true);
 	}
-	public void chatFrame(int usernumber) {
+	public void chatFrame(String name, String gender ,int listindex) {
 		chatFrame=new JFrame();
 		// 클라이언드 프레임 창 조정
 		chatFrame.setBounds(1150, 210, 368, 634);
@@ -444,9 +446,41 @@ public class login {
 		chatPanel3 = new ChatPanel3();
 		chatPanel3.setBounds(0,493,352,102);
 		
+		if(name.equals("")||gender.equals("")) {
+		chatPanel1.add(list.get(listindex).chatProfileButton.get(listindex));
+		chatPanel1.add(list.get(listindex).chatLabel.get(listindex));
+		}
+		else {
+			if(gender.equals("남성")) {
+				chatProfile = new JButton(new ImageIcon("src/image/남성.jpg"));
+				chatProfile.setBounds(15,14,45,45);
+			}
+			else if(gender.equals("여성")) {
+				chatProfile= new JButton(new ImageIcon("src/image/여성.jpg"));
+				chatProfile.setBounds(15,14,45,45);
+			}
+			chatLabel = new JLabel(name);
+			chatLabel.setBounds(74,10,45,33);
+			chatPanel1.add(chatProfile);
+			chatPanel1.add(chatLabel);
+		}
+		
+		outgoing = new JTextArea();
+		outgoing.setBounds(10,10,265,57);
+		outgoing.setLineWrap(true);
+        outgoing.setWrapStyleWord(true);
+        outgoing.setEditable(true);
+        
+        chat_scroll=new JScrollPane(outgoing,JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+    	chat_scroll.setBorder(null);
+        chat_scroll.setBounds(10,10,265,55);
+        chatPanel3.add(chat_scroll);
+        
 		chatFrame.getContentPane().add(chatPanel1);
-		chatFrame.getContentPane().add(chatPanel3);
 		chatFrame.getContentPane().add(chatPanel2);
+		chatFrame.getContentPane().add(chatPanel3);
+		
+		
 		
 		
 		chatFrame.setVisible(true);
@@ -578,7 +612,7 @@ public class login {
 				chatPanel3Background = new ImageIcon(CP3_BACK);
 			}
 			public void paintComponent(Graphics g) {
-				g.drawImage(chatPanel3Background.getImage(), 0, 0, 352, 102, null);
+				g.drawImage(chatPanel3Background.getImage(), 0, 0, 352, 104, null);
 			}
 		}
 
@@ -661,8 +695,12 @@ public class login {
             for(int i=0;i<list.size();i++) {
             if(e.getSource() == list.get(i).chatButton.get(i)) {
             	listIndex=i; //해당 list인덱스를 저장
-            	chatFrame(listIndex); //프레임에 해당 list인덱스 번호를 넘겨줌
+            	chatFrame("","",listIndex); //프레임에 해당 list인덱스 번호를 넘겨줌
             }
+            }
+            //본인에게 채팅보내는 버튼
+            if(e.getSource() ==chatButton){
+            	chatFrame(loginUser,userGender,0);
             }
 		}
 	}
@@ -785,6 +823,8 @@ public class login {
 			userPanel.setPreferredSize(new Dimension(170,70));
 			userPanel.setBackground(Color.white);
 			
+			ButtonListener b1 = new ButtonListener();
+			
 			name = new JLabel(loginUser);
 			name.setBounds(77,20,45,33);
 			name.setFont(name.getFont().deriveFont(14.0f));
@@ -802,6 +842,7 @@ public class login {
 			chatButton.setBounds(0,0,313,70);
 			chatButton.setContentAreaFilled(false);
 			chatButton.setFocusPainted(false);
+			chatButton.addActionListener(b1);
 			
 			musicButton=new JButton() ;
 			musicButton.setBounds(160,20,140,30);
@@ -824,7 +865,6 @@ public class login {
 			
 			/////////////////////////////////////////친구패널 //
 			for(int i=0;i<list.size();i++) {
-				ButtonListener b1 = new ButtonListener();
 				list.get(i).chatButton.get(i).addActionListener(b1);
 				FriendListPanel.add(list.get(i));
 			}
