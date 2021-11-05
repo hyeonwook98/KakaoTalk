@@ -55,6 +55,12 @@ public class login {
 	JScrollPane scroll1,scroll2,chat_scroll;
 	JTextArea outgoing;
 	ArrayList<Friend> list;  
+	ArrayList<JButton> chat_Button;
+	ArrayList<JButton> music_Button;
+	ArrayList<JButton> profile_Button;
+	ArrayList<JLabel> label_name ;
+	ArrayList<JButton> chat_ProfileButton ;                    //채팅방에서 프로필과 라벨사용함 밑에도
+    ArrayList<JLabel> chat_Label = new ArrayList<>();          //채팅방에서 프로필과 라벨사용함
 	JPanel userpanel; JButton profileButton ; 
 	JButton musicButton; JButton chatButton; JLabel name;
 	int x,y,width,height;
@@ -137,6 +143,12 @@ public class login {
 		mainFrame.getContentPane().setLayout(null);
 		mainFrame.setLocationRelativeTo(null);
 
+		chat_Button = new ArrayList<>();
+		music_Button = new ArrayList<>();
+		profile_Button= new ArrayList<>();
+		label_name= new ArrayList<>();
+		chat_ProfileButton = new ArrayList<>();
+		chat_Label = new ArrayList<>();
 		///////////////////////////////////////////////////////메인패널(컨트롤 패널)//////////////
 		mp = new MainPanel();
 		mp.setBounds(0, 0, 66, 630);
@@ -447,8 +459,8 @@ public class login {
 		chatPanel3.setBounds(0,493,352,102);
 		
 		if(name.equals("")||gender.equals("")) {
-		chatPanel1.add(list.get(listindex).chatProfileButton.get(listindex));
-		chatPanel1.add(list.get(listindex).chatLabel.get(listindex));
+		chatPanel1.add(chat_Label.get(listindex));
+		chatPanel1.add(chat_ProfileButton.get(listindex));
 		}
 		else {
 			if(gender.equals("남성")) {
@@ -692,16 +704,19 @@ public class login {
             	ChatButton2.setEnabled(false);
             	mp.repaint();
 			}
+          //본인에게 채팅보낼떄
+            if(e.getSource() ==chatButton){
+            	chatFrame(loginUser,userGender,0);
+            }
+            //친구에게 채팅보낼때
             for(int i=0;i<list.size();i++) {
-            if(e.getSource() == list.get(i).chatButton.get(i)) {
+                if(e.getSource() == chat_Button.get(i)) {
             	listIndex=i; //해당 list인덱스를 저장
             	chatFrame("","",listIndex); //프레임에 해당 list인덱스 번호를 넘겨줌
             }
             }
-            //본인에게 채팅보내는 버튼
-            if(e.getSource() ==chatButton){
-            	chatFrame(loginUser,userGender,0);
-            }
+            
+            
 		}
 	}
 
@@ -865,9 +880,45 @@ public class login {
 			
 			/////////////////////////////////////////친구패널 //
 			for(int i=0;i<list.size();i++) {
-				list.get(i).chatButton.get(i).addActionListener(b1);
+				//list.get(i).chatButton.addActionListener(b1);//여기문제
+				label_name.add(new JLabel(list.get(i).name));
+				label_name.get(i).setBounds(66,16,45,33);
+				label_name.get(i).setFont(label_name.get(i).getFont().deriveFont(14.0f));
+				
+				chat_Label.add(new JLabel(list.get(i).name));
+				chat_Label.get(i).setBounds(74,10,45,33);
+				chat_Label.get(i).setFont(chat_Label.get(i).getFont().deriveFont(13.0f));
+				
+				if(list.get(i).gender.equals("남성")) {
+					profile_Button.add(new JButton(new ImageIcon("src/image/남성.jpg")));
+					profile_Button.get(i).setBounds(19,13,40,40);
+					chat_ProfileButton.add(new JButton(new ImageIcon("src/image/남성.jpg")));
+					chat_ProfileButton.get(i).setBounds(15,14,45,45);
+				}
+				else if(list.get(i).gender.equals("여성")) {
+					profile_Button.add(new JButton(new ImageIcon("src/image/여성.jpg")));
+					profile_Button.get(i).setBounds(19,13,40,40);
+					chat_ProfileButton.add(new JButton(new ImageIcon("src/image/여성.jpg")));
+					chat_ProfileButton.get(i).setBounds(15,14,45,45);
+				}
+				
+				chat_Button.add(new JButton());
+				chat_Button.get(i).setBounds(0,0,313,65);
+				chat_Button.get(i).setContentAreaFilled(false);
+				chat_Button.get(i).setFocusPainted(false);
+				chat_Button.get(i).addActionListener(b1);
+				
+				music_Button.add(new JButton()) ;
+				music_Button.get(i).setBounds(160,18,140,30);
+				
+				list.get(i).add(label_name.get(i));
+				list.get(i).add(profile_Button.get(i));
+				list.get(i).add(music_Button.get(i));
+				list.get(i).add(chat_Button.get(i));
+				
 				FriendListPanel.add(list.get(i));
 			}
+			
 			//////////////////////////////////////////null패널
 			nullPanel = new JPanel();
 			nullPanel.setLayout(null);
