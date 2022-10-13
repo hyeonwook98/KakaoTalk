@@ -12,7 +12,7 @@ public class Friend extends JPanel {
 
 	String name;
     String gender;
-    String phone;
+    int number;
     //ArrayList<People> friendPanel;
     ArrayList<JButton> chatButton = new ArrayList<>();
     ArrayList<JButton> musicButton = new ArrayList<>();
@@ -21,10 +21,10 @@ public class Friend extends JPanel {
     ArrayList<JButton> chatProfileButton = new ArrayList<>(); //채팅방에서 프로필과 라벨사용함 밑에도
     ArrayList<JLabel> chatLabel = new ArrayList<>();          //채팅방에서 프로필과 라벨사용함
 	
-	public Friend(String name, String gender, String phone) {
+	public Friend(String name, String gender, int number) {
 		this.name=name;
 		this.gender=gender;
-		this.phone=phone;
+		this.number=number;
 		
 		setLayout(null);
 		setPreferredSize(new Dimension(170,65));

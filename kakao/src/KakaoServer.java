@@ -99,8 +99,14 @@ public class KakaoServer {
 						handleAdd(message.getName(),message.getPhone(),writer);
 					}
 					else if (type == ChatMessage.MsgType.USER_MSG) {
-						// handleMessage(message.getSender(), message.getReceiver(),
+						//handleMessage(message.getSender(), message.getReceiver(),writer);
 						// message.getContents());
+					} 
+					else if (type == ChatMessage.MsgType.SEND_MSG) {
+						handleMessage(message.getName(),message.getSender(), message.getReceiver(),message.getContents(),writer);
+					} 
+					else if (type == ChatMessage.MsgType.USERMSG_RECORD) {
+						//handleUserMessageRecord(message.getSender(), message.getReceiver(),writer);
 					} 
 					else if (type == ChatMessage.MsgType.NO_ACT) {
 						// 무시해도 되는 메시지
@@ -133,7 +139,7 @@ public class KakaoServer {
 				a = 1;
 				System.out.println("이미 가입된 이메일입니다.");
 				writer.writeObject(
-						new ChatMessage(ChatMessage.MsgType.CREATION_FAILURE, "", "", "", "", "", "", "", ""));
+						new ChatMessage(ChatMessage.MsgType.CREATION_FAILURE, "", "", "", "", "", 0,0, ""));
 			}
 
 		} catch (Exception ex) {
@@ -143,7 +149,7 @@ public class KakaoServer {
 		if (a == 0) {
 			try {
 				writer.writeObject(
-						new ChatMessage(ChatMessage.MsgType.CREATION_SUCCESS, "", "", "", "", "", "", "", ""));
+						new ChatMessage(ChatMessage.MsgType.CREATION_SUCCESS, "", "", "", "", "", 0,0, ""));
 				pstmt = conn.prepareStatement(sql); // sql문을 conn을 이용해 전달, sql문을 DB에 전달한다고 생각하면 될듯! try catch문이 필요한 문장
 				pstmt.setString(1, name); // 물음표가 있는 위치 순서로 번호가 지정됨. 물음표의 개수만큼 만들어줘야함.(개수 안맞추면 오류가 난다!)
 				pstmt.setString(2, email);
@@ -175,7 +181,9 @@ public class KakaoServer {
 		// TODO Auto-generated method stub
 		String sql = "select 유저번호 from user where 이메일 like ? and 비밀번호 like ? ;";
 		String sql2 = "select 친구번호 from user,friend where user.유저번호 like ? and friend.유저번호 like ?;";
-		String sql3 = "select 이름,성별,전화번호 from user where 유저번호 like ? ;";
+		String sql3 = "select 유저번호,이름,성별 from user where 유저번호 like ? ;";
+		String sql4= "select 보내는유저,받는유저,내용 from chat where 보내는유저 like ? or 받는유저 like ?;";
+		//String sql5= "select 보내는유저,받는유저,내용 from chat where 보내는유저 like ? and 받는유저 like ?;";
 		friend= new ArrayList<Integer>(); 
 		
 		int a=0; //a가 0이면 로그인 성공 , a가 1이면 로그인 실패
@@ -188,11 +196,11 @@ public class KakaoServer {
 			if (rs.next()) {// 다음 레코드가 있을때
 				usernumber=rs.getInt(1);
 				System.out.println("카카오톡 유저입니다.");
-				writer.writeObject(new ChatMessage(ChatMessage.MsgType.NO_ACT, "", "", "", "", "", "", "", ""));
+				writer.writeObject(new ChatMessage(ChatMessage.MsgType.NO_ACT, "", "", "", "", "", 0, 0, ""));
 			} else {
 				a=1;
 				System.out.println("없는 유저입니다.");
-				writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN_FAILURE, "", "", "", "", "", "", "", ""));
+				writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN_FAILURE, "", "", "", "", "", 0, 0, ""));
 			}
 			if(a==0) {
 				pstmt = conn.prepareStatement(sql2);
@@ -208,7 +216,7 @@ public class KakaoServer {
 				//유저정보에 대한 정보
 				while (rs.next()) {
 					//System.out.println(rs.getString(1));
-					writer.writeObject(new ChatMessage(ChatMessage.MsgType.USER_INFO,rs.getString(1) , "", "",rs.getString(3) , rs.getString(2), "", "", ""));
+					writer.writeObject(new ChatMessage(ChatMessage.MsgType.USER_INFO,rs.getString(2) , "", "","" , rs.getString(3), rs.getInt(1), 0, ""));
 	
 				}
 				//친구에 대한 정보
@@ -217,18 +225,36 @@ public class KakaoServer {
 			    	rs = pstmt.executeQuery();
 			    	
 			    	while (rs.next()) {
-			    		writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(1) , "", "", rs.getString(3), rs.getString(2), "", "", ""));
+			    		writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(2) , "", "", "", rs.getString(3),rs.getInt(1), 0, ""));
 			    		
 			    	}
 			    }
-			    writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN,"" , "", "", "", "", "", "", ""));
+			    writer.writeObject(new ChatMessage(ChatMessage.MsgType.LOGIN,"" , "", "", "", "", usernumber, 0, ""));
+			    try {
+					pstmt = conn.prepareStatement(sql4);
+					pstmt.setInt(1, usernumber);
+					pstmt.setInt(2, usernumber);
+					rs = pstmt.executeQuery(); // Statement를 넣어도되지만,앞에 넣었으므로 현재는 안넣음
+					
+					while(rs.next()) {
+						if(rs.getInt(1)==rs.getInt(2))
+						    writer.writeObject(new ChatMessage(ChatMessage.MsgType.USERMSG_RECORD,"", "", "", "", "", rs.getInt(1), rs.getInt(2), rs.getString(3)));
+						else
+							writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIENDMSG_RECORD,"", "", "", "", "", rs.getInt(1), rs.getInt(2), rs.getString(3)));
+					}
+					
+					}catch(Exception ex) {
+						System.out.println("S : 서버에서 송신 중 이상 발생");
+						ex.printStackTrace();
+					}
+			    
 			}
+			
 
 		} catch (Exception ex) {
 			System.out.println("S : 서버에서 송신 중 이상 발생");
 			ex.printStackTrace();
 		}
-		
 	}
 	// 비밀번호 재설정시 계정유뮤확인
 	public void handleConfirm(String email, String phone, ObjectOutputStream writer) {
@@ -242,10 +268,10 @@ public class KakaoServer {
 
 			if (rs.next()) {// 다음 레코드가 있을때
 				System.out.println("카카오톡 유저입니다.");
-				writer.writeObject(new ChatMessage(ChatMessage.MsgType.CONFIRM, "", "", "", "", "", "", "", ""));
+				writer.writeObject(new ChatMessage(ChatMessage.MsgType.CONFIRM, "", "", "", "", "", 0,0, ""));
 			} else {
 				System.out.println("없는 유저입니다.");
-				writer.writeObject(new ChatMessage(ChatMessage.MsgType.CONFIRM_FAILURE, "", "", "", "", "", "", "", ""));
+				writer.writeObject(new ChatMessage(ChatMessage.MsgType.CONFIRM_FAILURE, "", "", "", "", "", 0,0, ""));
 			}
 
 		} catch (Exception ex) {
@@ -279,7 +305,7 @@ public class KakaoServer {
 		String sql = "insert into friend(유저번호,친구번호)values(?,?);";
 		String sql2 = "select 유저번호,이름,전화번호 from user where 이름 like ? and 전화번호 like ?;";
 		String sql3 = "select 유저번호,친구번호 from friend where 유저번호 like ? and 친구번호 like ?;";
-		String sql4 = "select 이름,성별 from user where 유저번호 like ? ;";
+		String sql4 = "select 유저번호,이름,성별 from user where 유저번호 like ? ;";
 		try {
 			//친구추가하고자 하는 정보가 카카오 유저인지 먼저 판단하기
 			pstmt = conn.prepareStatement(sql2); // sql문을 conn을 이용해 전달, sql문을 DB에 전달한다고 생각하면 될듯! try catch문이 필요한 문장
@@ -293,7 +319,7 @@ public class KakaoServer {
 			else {
 				a=1;
 				writer.writeObject(
-						new ChatMessage(ChatMessage.MsgType.ADD_FAILURE, "", "", "", "", "", "", "", ""));
+						new ChatMessage(ChatMessage.MsgType.ADD_FAILURE, "", "", "", "", "", 0,0, ""));
 			}
 
 		} catch (Exception ex) {
@@ -310,7 +336,7 @@ public class KakaoServer {
 				if (rs.next()) {// 다음 레코드가 있을때 -> 친구테이블에 정보삽입
 					 b=1;
 					 writer.writeObject(
-								new ChatMessage(ChatMessage.MsgType.FRIEND_EXIST, "", "", "", "", "", "", "", ""));
+								new ChatMessage(ChatMessage.MsgType.FRIEND_EXIST, "", "", "", "", "", 0,0, ""));
 				}
 				else {
 					//writer.writeObject(new ChatMessage(ChatMessage.MsgType.ADD, "", "", "", "", "", "", "", ""));
@@ -338,12 +364,10 @@ public class KakaoServer {
 				
 				rs = pstmt.executeQuery();
 				while(rs.next()) {
-					writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(1) , "", "", "", rs.getString(2), "", "", ""));
+					writer.writeObject(new ChatMessage(ChatMessage.MsgType.FRIEND_LIST,rs.getString(2) , "", "", "", rs.getString(3), rs.getInt(1),0, ""));
 				}
 
-				writer.writeObject(new ChatMessage(ChatMessage.MsgType.ADD, "", "", "", "", "", "", "", ""));
-				pstmt.close(); // 종료
-				conn.close(); // 종료
+				writer.writeObject(new ChatMessage(ChatMessage.MsgType.ADD, "", "", "", "", "", 0,0, ""));
 			} catch (Exception ex) {
 				System.out.println("S : 서버에서 송신 중 이상 발생");
 				ex.printStackTrace();
@@ -352,19 +376,52 @@ public class KakaoServer {
 		}
 		
 	}
+	/*public void handleUserMessageRecord(int senderNumber, int receiverNumber,ObjectOutputStream writer) {
+		String sql= "select 보내는유저,받는유저,내용 from chat where 보내는유저 like ? and 받는유저 like ?;";
+		try {
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, senderNumber);
+			pstmt.setInt(2, receiverNumber);
+			rs = pstmt.executeQuery(); // Statement를 넣어도되지만,앞에 넣었으므로 현재는 안넣음
+			
+			while(rs.next()) {
+				writer.writeObject(new ChatMessage(ChatMessage.MsgType.USERMSG_RECORD,"", "", "", "", "", rs.getInt(1), rs.getInt(2), rs.getString(3)));
+			}
+			}catch(Exception ex) {
+				System.out.println("S : 서버에서 송신 중 이상 발생");
+				ex.printStackTrace();
+			}
+	}*/
+
 
 	// 유저가 대화 상대방에게 보내는 메시지. 그 상대 혹은 "원하는 친구전체"에게 보내주어야 함
-	/*
-	 * private synchronized void handleMessage(String sender, String receiver,
-	 * String contents) { //같은 단톡방에 있는 친구전체에게 보내는 경우를 처리해야 함, 이경우 리시버가 다수임
-	 * if(receiver.length()>4) { array=receiver.split(","); for(int
-	 * i=0;i<array.length;i++) { who.add(array[i]); //메시지를 받는사람이 다수일 경우 arraylist에
-	 * 받는 사람저장 추후에 db로 넘겨줌 } } // 특정 상대,자신에게 보내는 경우라면 else {
-	 * array=receiver.split(","); who.add(array[0]); //who[0]에는 메시지를 보내려는 상대방 이름 }
-	 * try {
-	 * 
-	 * } catch (Exception ex) { System.out.println("S : 서버에서 송신 중 이상 발생");
-	 * ex.printStackTrace(); } }
-	 */
+	public void handleMessage(String name, int sender, int receiver,String contents,ObjectOutputStream writer) {
+		 String sql = "insert into chat(보내는유저,받는유저,내용) values(?,?,?);";
+		 try {
+			 pstmt = conn.prepareStatement(sql); // sql문을 conn을 이용해 전달, sql문을 DB에 전달한다고 생각하면 될듯! try catch문이 필요한 문장
+			 pstmt.setInt(1, sender); // 물음표가 있는 위치 순서로 번호가 지정됨. 물음표의 개수만큼 만들어줘야함.(개수 안맞추면 오류가 난다!)
+			 pstmt.setInt(2, receiver);
+			 pstmt.setString(3, contents);
+			 
+			 int result = pstmt.executeUpdate(); // 쿼리 전송의 결과 객체를 반환하기위함. 0이면 오류, 1이면 제대로 실행된 것.
+				// executeUpdate는 insert, update, delete 문에서 사용
+				// executeQuery는 select문에서 사용.
+			 System.out.println("result = " + result);
+			 
+			 if(sender==receiver)
+			 writer.writeObject(new ChatMessage(ChatMessage.MsgType.YOURSELF_MSG,"" , "", "", "", "", sender, receiver, contents));
+			 else
+				 writer.writeObject(new ChatMessage(ChatMessage.MsgType.WITHFRIEND_MSG,"" , "", "", "", "", sender, receiver, contents));
+			/* pstmt = conn.prepareStatement(sql1);
+			 pstmt.setInt(1, sender); // 물음표가 있는 위치 순서로 번호가 지정됨. 물음표의 개수만큼 만들어줘야함.(개수 안맞추면 오류가 난다!)
+			 pstmt.setInt(2, receiver);
+			 pstmt.setString(3, contents );
+			 
+			 while(rs.next()) {
+				 writer.writeObject(new ChatMessage(ChatMessage.MsgType.SEND_MSG,"" , "", "", "", "", rs.getInt(1), rs.getInt(2), rs.getString(3)));
+			 }*/
+		 } catch (Exception ex) { System.out.println("S : 서버에서 송신 중 이상 발생");
+		 ex.printStackTrace(); } 
+	}
 
 }
