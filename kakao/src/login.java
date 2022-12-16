@@ -130,6 +130,8 @@ public class login {
 		pwChangeButton = new JButton(new ImageIcon("src/image/비밀번호 재설정 버튼.png"));
 		loginButton.setBounds(58, 300, 240, 40);
 		createButton.setBounds(60, 500, 110, 30);
+		createButton.setBorderPainted(false);
+		pwChangeButton.setBorderPainted(false);
 		pwChangeButton.setBounds(185, 500, 110, 30);
 		ButtonListener bl = new ButtonListener();
 		dbButtonListener b2 = new dbButtonListener();
@@ -190,49 +192,49 @@ public class login {
 
 		friendButton2 = new JButton(new ImageIcon("src/image/친구2.png"));
 		friendButton2.setBounds(14, 40, 40, 40);
-		// friendButton1.setBorderPainted(false);
+		friendButton2.setBorderPainted(false);
 		friendButton2.setContentAreaFilled(false);
 		friendButton2.setFocusPainted(false);
 		
 		friendButton1 = new JButton(new ImageIcon("src/image/친구1.png"));
 		friendButton1.setBounds(14, 40, 40, 40);
-		// friendButton1.setBorderPainted(false);
+		friendButton1.setBorderPainted(false);
 		friendButton1.setContentAreaFilled(false);
 		friendButton1.setFocusPainted(false);
 
 		ChatButton1 = new JButton(new ImageIcon("src/image/채팅1.png"));
 		ChatButton1.setBounds(14, 100, 40, 40);
-		// ChatButton1.setBorderPainted(false);
+		ChatButton1.setBorderPainted(false);
 		ChatButton1.setContentAreaFilled(false);
 		ChatButton1.setFocusPainted(false);
 		
 		ChatButton2 = new JButton(new ImageIcon("src/image/채팅2.png"));
 		ChatButton2.setBounds(14, 100, 40, 40);
-		// ChatButton1.setBorderPainted(false);
+		ChatButton1.setBorderPainted(false);
 		ChatButton2.setContentAreaFilled(false);
 		ChatButton2.setFocusPainted(false);
 
 		PlusButton1 = new JButton(new ImageIcon("src/image/더보기1.png"));
 		PlusButton1.setBounds(14, 160, 40, 40);
-		// PlusButton1.setBorderPainted(false);
+		PlusButton1.setBorderPainted(false);
 		PlusButton1.setContentAreaFilled(false);
 		PlusButton1.setFocusPainted(false);
 
 		emoticonButton1 = new JButton(new ImageIcon("src/image/이모티콘 샵1.png"));
 		emoticonButton1.setBounds(14, 419, 40, 40);
-		// emoticonButton1.setBorderPainted(false);
+		emoticonButton1.setBorderPainted(false);
 		emoticonButton1.setContentAreaFilled(false);
 		emoticonButton1.setFocusPainted(false);
 
 		noticeButton1 = new JButton(new ImageIcon("src/image/알림1.png"));
 		noticeButton1.setBounds(14, 459, 40, 40);
-		// noticeButton1.setBorderPainted(false);
+		noticeButton1.setBorderPainted(false);
 		noticeButton1.setContentAreaFilled(false);
 		noticeButton1.setFocusPainted(false);
 
 		settingButton1 = new JButton(new ImageIcon("src/image/설정1.png"));
 		settingButton1.setBounds(14, 499, 40, 40);
-		// settingButton1.setBorderPainted(false);
+		settingButton1.setBorderPainted(false);
 		settingButton1.setContentAreaFilled(false);
 		settingButton1.setFocusPainted(false);
 		
@@ -337,7 +339,7 @@ public class login {
 
 		confirmButton = new JButton();
 		confirmButton.setBounds(38, 427, 300, 38);
-		// confirmButton.setBorderPainted(false);
+		confirmButton.setBorderPainted(false);
 		confirmButton.setContentAreaFilled(false);
 		confirmButton.setFocusPainted(false);
 
@@ -830,10 +832,12 @@ public class login {
 				
 				if(userGender.equals("남성")) {
 					profileButton = new JButton(new ImageIcon("src/image/남성.jpg"));
+					profileButton.setBorderPainted(false);
 					profileButton.setBounds(19,10,50,50);
 				}
 				else if(userGender.equals("여성")) {
 					profileButton = new JButton(new ImageIcon("src/image/여성.jpg"));
+					profileButton.setBorderPainted(false);
 					profileButton.setBounds(19,10,50,50);
 				}
 				
@@ -841,10 +845,12 @@ public class login {
 				chatButton.setBounds(0,0,313,70);
 				chatButton.setContentAreaFilled(false);
 				chatButton.setFocusPainted(false);
+				chatButton.setBorderPainted(false);
 				chatButton.addActionListener(b1);
 				
 				musicButton=new JButton() ;
 				musicButton.setBounds(160,20,140,30);
+				musicButton.setBorderPainted(false);
 				
 				userPanel.add(name);userPanel.add(musicButton);userPanel.add(profileButton);userPanel.add(chatButton);
 				FriendListPanel.add(userPanel);
@@ -870,22 +876,27 @@ public class login {
 					
 					if(list.get(i).gender.equals("남성")) {
 						profile_Button.add(new JButton(new ImageIcon("src/image/남성.jpg")));
+						profile_Button.get(i).setBorderPainted(false);
 						profile_Button.get(i).setBounds(19,13,40,40);
 					}
 					else if(list.get(i).gender.equals("여성")) {
 						profile_Button.add(new JButton(new ImageIcon("src/image/여성.jpg")));
+						profile_Button.get(i).setBorderPainted(false);
 						profile_Button.get(i).setBounds(19,13,40,40);
 					}
 					
 					chat_Button.add(new JButton());
 					chat_Button.get(i).setBounds(0,0,313,65);
 					chat_Button.get(i).setContentAreaFilled(false);
+					chat_Button.get(i).setBorderPainted(false);
 					chat_Button.get(i).setFocusPainted(false);
 					chat_Button.get(i).addActionListener(b1);
 					
 					music_Button.add(new JButton()) ;
 					music_Button.get(i).setBounds(160,18,140,30);
+					music_Button.get(i).setBorderPainted(false);
 					
+					profile_Button.get(i).setBorderPainted(false);
 					list.get(i).add(label_name.get(i));
 					list.get(i).add(profile_Button.get(i));
 					list.get(i).add(music_Button.get(i));
@@ -1438,6 +1449,7 @@ public class login {
 					else if (type == ChatMessage.MsgType.WITHFRIEND_MSG) {
 						senderNumber=message.getSender(); receiverNumber=message.getReceiver(); contents=message.getContents();
 						processFriendMessage(senderNumber ,receiverNumber, contents);
+						processFriendMessage(receiverNumber,senderNumber, contents);
 					}
 				}
 			} catch (Exception ex) {
